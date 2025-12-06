@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - Crown Nexus{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'products:product_list' %}">Products</a></li>
+        <li class="breadcrumb-item"><a href="?category={{ product.category.id }}">{{ product.category.name }}</a></li>
+        <li class="breadcrumb-item active">{{ product.part_number }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <!-- Product Images -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                {% if product.images.all %}
+                <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for image in product.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ image.alt_text }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if product.images.count > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="text-center p-5 bg-light">
+                    <i class="fas fa-image fa-5x text-muted"></i>
+                    <p class="mt-3">No images available</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Documents -->
+        {% if product.documents.all %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5><i class="fas fa-file-pdf"></i> Documents</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for document in product.documents.all %}
+                <a href="{{ document.file.url }}" class="list-group-item list-group-item-action" target="_blank">
+                    <i class="fas fa-download"></i> {{ document.title }}
+                    <small class="text-muted">({{ document.get_document_type_display }})</small>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Product Details -->
+    <div class="col-md-6">
+        <h1>{{ product.name }}</h1>
+        <p class="text-muted">
+            <strong>Part Number:</strong> {{ product.part_number }}<br>
+            <strong>Manufacturer:</strong> {{ product.manufacturer.name }}<br>
+            <strong>MFR Part #:</strong> {{ product.manufacturer_part_number }}
+        </p>
+
+        {% if user.is_authenticated %}
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                <h3 class="text-primary mb-0">${{ product.base_price }}</h3>
+                <small class="text-muted">Your Price</small>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="mb-3">
+            <span class="badge {% if product.quantity_in_stock > 0 %}bg-success{% else %}bg-danger{% endif %} me-2">
+                {% if product.quantity_in_stock > 0 %}
+                <i class="fas fa-check-circle"></i> In Stock ({{ product.quantity_in_stock }})
+                {% else %}
+                <i class="fas fa-times-circle"></i> Out of Stock
+                {% endif %}
+            </span>
+            <span class="badge bg-info">{{ product.get_status_display }}</span>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Description</h5>
+            </div>
+            <div class="card-body">
+                <p>{{ product.description|linebreaks }}</p>
+                {% if product.long_description %}
+                <hr>
+                <p>{{ product.long_description|linebreaks }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Specifications -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5><i class="fas fa-clipboard-list"></i> Specifications</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tbody>
+                        {% if product.attributes %}
+                        {% if product.attributes.color %}
+                        <tr>
+                            <th>Color</th>
+                            <td>{{ product.attributes.color }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if product.attributes.material %}
+                        <tr>
+                            <th>Material</th>
+                            <td>{{ product.attributes.material }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if product.attributes.finish %}
+                        <tr>
+                            <th>Finish</th>
+                            <td>{{ product.attributes.finish }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if product.attributes.warranty_period %}
+                        <tr>
+                            <th>Warranty</th>
+                            <td>{{ product.attributes.warranty_period }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endif %}
+                        {% if product.weight %}
+                        <tr>
+                            <th>Weight</th>
+                            <td>{{ product.weight }} lbs</td>
+                        </tr>
+                        {% endif %}
+                        {% if product.length %}
+                        <tr>
+                            <th>Dimensions</th>
+                            <td>{{ product.length }} x {{ product.width }} x {{ product.height }}</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Vehicle Applications -->
+        {% if product.vehicle_applications.exists %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5><i class="fas fa-car"></i> Vehicle Applications</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Fits:</strong></p>
+                <ul class="list-unstyled">
+                    {% for app in product.vehicle_applications.all|slice:":10" %}
+                    <li>
+                        <i class="fas fa-check-circle text-success"></i>
+                        {{ app.year }} {{ app.make.name }} {{ app.model.name }}
+                        {% if app.submodel %}- {{ app.submodel }}{% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% if product.vehicle_applications.count > 10 %}
+                <small class="text-muted">
+                    ...and {{ product.vehicle_applications.count|add:"-10" }} more vehicles
+                </small>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Related Products -->
+{% if related_products %}
+<div class="row mt-5">
+    <div class="col-12">
+        <h3><i class="fas fa-box"></i> Related Products</h3>
+        <hr>
+    </div>
+    {% for related in related_products %}
+    <div class="col-md-3 mb-3">
+        <div class="card product-card h-100">
+            {% if related.images.first %}
+            <img src="{{ related.images.first.image.url }}" class="card-img-top product-image" alt="{{ related.name }}">
+            {% else %}
+            <div class="card-img-top product-image bg-secondary d-flex align-items-center justify-content-center">
+                <i class="fas fa-image fa-3x text-white"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h6 class="card-title">{{ related.name|truncatewords:5 }}</h6>
+                <p class="text-muted mb-1"><small>{{ related.part_number }}</small></p>
+                {% if user.is_authenticated %}
+                <p class="text-primary"><strong>${{ related.base_price }}</strong></p>
+                {% endif %}
+                <a href="{% url 'products:product_detail' related.slug %}" class="btn btn-sm btn-primary w-100">
+                    View Details
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,100 @@
+# Core Django
+Django
+django-environ
+
+# Serve media in production
+whitenoise
+
+# Database
+psycopg2-binary
+psycopg
+
+# Web Server
+gunicorn
+
+# Caching & Sessions
+redis
+django-redis
+hiredis
+
+# Celery for async tasks
+celery
+django-celery-beat
+django-celery-results
+flower
+
+# REST API
+djangorestframework
+django-filter
+drf-spectacular
+
+# HTMX and Frontend
+django-htmx
+django-widget-tweaks
+
+# Wagtail CMS
+wagtail
+wagtail-generic-chooser
+
+# Forms
+django-crispy-forms
+crispy-bootstrap5
+
+# File Handling
+openpyxl
+xlsxwriter
+pandas
+python-magic
+Pillow
+
+# SFTP Support
+paramiko
+
+# Data Validation
+cerberus
+jsonschema
+
+# Security
+django-cors-headers
+django-ratelimit
+argon2-cffi
+
+# Monitoring & Logging
+sentry-sdk
+django-extensions
+django-health-check
+
+# Utilities
+python-dateutil
+pytz
+requests
+beautifulsoup4
+
+# Search
+django-haystack
+
+# Permissions
+django-guardian
+rules
+
+# Model utilities
+django-model-utils
+django-polymorphic
+
+# Admin enhancements
+django-admin-sortable2
+django-import-export
+
+# Database optimizations
+django-bulk-update
+django-pgviews
+
+# Thumbnails and image optimization
+easy-thumbnails
+django-imagekit
+
+# Scheduled tasks
+django-crontab
+
+# Environment
+python-decouple

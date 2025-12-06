@@ -1,0 +1,23 @@
+-r base.in
+
+# Production server
+uvicorn[standard]
+
+# Database connection pooling
+psycopg2-pool
+
+# Security
+django-secure
+
+# Static file serving
+whitenoise
+
+# Monitoring
+newrelic
+
+# AWS (if using AWS for storage)
+boto3
+django-storages
+
+# Email
+django-anymail

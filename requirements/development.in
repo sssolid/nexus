@@ -1,0 +1,40 @@
+-r base.in
+
+# Development tools
+django-debug-toolbar
+django-silk
+
+# Testing
+pytest
+pytest-django
+pytest-cov
+factory-boy
+faker
+model-bakery
+
+# Code quality
+black
+flake8
+isort
+pylint
+pylint-django
+mypy
+django-stubs
+
+# Documentation
+sphinx
+sphinx-rtd-theme
+
+# Debugging
+ipython
+ipdb
+
+# Load testing
+locust
+
+# Security scanning
+bandit
+safety
+
+# Pre-commit hooks
+pre-commit
