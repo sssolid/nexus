@@ -1,3 +1,4 @@
+{% load cms_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,6 +36,11 @@
         .navbar-brand {
             font-weight: 600;
             font-size: 1.5rem;
+        }
+        
+        .nav-link.active {
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 4px;
         }
         
         main {
@@ -97,52 +103,47 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'products:product_list' %}">
-                <i class="fas fa-car"></i> Auto Parts Catalog
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-car"></i> Crown Nexus
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    {% get_site_nav as site_nav %}
+                    {% for item in site_nav %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if item.active %}active{% endif %}" href="{{ item.url }}">
+                                {% if item.icon %}<i class="fas fa-{{ item.icon }}"></i> {% endif %}{{ item.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    
                     {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'products:product_list' %}">
-                                <i class="fas fa-box"></i> Products
-                            </a>
-                        </li>
-                        {% if user.is_customer %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'exports:export_list' %}">
-                                <i class="fas fa-download"></i> Exports
-                            </a>
-                        </li>
-                        {% endif %}
-                        {% if user.is_employee %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/">
-                                <i class="fas fa-cog"></i> Admin
-                            </a>
-                        </li>
-                        {% endif %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-user"></i> {{ user.get_full_name|default:user.email }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
+                                {% get_user_menu as user_menu %}
+                                {% for item in user_menu %}
+                                    <li>
+                                        <a class="dropdown-item" href="{{ item.url }}">
+                                            <i class="fas fa-{{ item.icon }}"></i> {{ item.title }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'accounts:login' %}">
+                            <a class="nav-link" href="/accounts/login/">
                                 <i class="fas fa-sign-in-alt"></i> Login
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'accounts:register' %}">
+                            <a class="nav-link" href="/accounts/register/">
                                 <i class="fas fa-user-plus"></i> Register
                             </a>
                         </li>
@@ -166,9 +167,7 @@
 
     <!-- Main Content -->
     <main>
-        <div class="container">
-            {% block content %}{% endblock %}
-        </div>
+        {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->

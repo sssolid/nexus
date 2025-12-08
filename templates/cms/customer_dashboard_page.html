@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block title %}{{ page.title }} - Crown Nexus{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">
+        <i class="fas fa-tachometer-alt"></i> {{ page.title }}
+    </h1>
+
+    {% if page.intro %}
+    <div class="alert alert-info">
+        {{ page.intro|richtext }}
+    </div>
+    {% endif %}
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <a href="{% url 'products:product_list' %}" class="card text-center text-decoration-none">
+                <div class="card-body">
+                    <i class="fas fa-box fa-3x text-primary mb-3"></i>
+                    <h5>Browse Products</h5>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'exports:export_form' %}" class="card text-center text-decoration-none">
+                <div class="card-body">
+                    <i class="fas fa-download fa-3x text-success mb-3"></i>
+                    <h5>Create Export</h5>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'validator:upload' %}" class="card text-center text-decoration-none">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-3x text-info mb-3"></i>
+                    <h5>Validate Data</h5>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'accounts:profile' %}" class="card text-center text-decoration-none">
+                <div class="card-body">
+                    <i class="fas fa-user fa-3x text-warning mb-3"></i>
+                    <h5>My Profile</h5>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Exports -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-download"></i> Recent Exports</h5>
+        </div>
+        <div class="card-body">
+            {% if recent_exports %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Format</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for export in recent_exports %}
+                            <tr>
+                                <td>{{ export.name }}</td>
+                                <td><span class="badge bg-secondary">{{ export.format }}</span></td>
+                                <td>
+                                    {% if export.status == 'COMPLETED' %}
+                                        <span class="badge bg-success">{{ export.status }}</span>
+                                    {% elif export.status == 'FAILED' %}
+                                        <span class="badge bg-danger">{{ export.status }}</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ export.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ export.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if export.file %}
+                                        <a href="{{ export.file.url }}" class="btn btn-sm btn-primary" download>
+                                            <i class="fas fa-download"></i> Download
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'exports:export_list' %}" class="btn btn-outline-primary">View All Exports <i class="fas fa-arrow-right"></i></a>
+            {% else %}
+                <p class="text-muted mb-0">No exports yet. <a href="{% url 'exports:export_form' %}">Create your first export</a></p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Validations -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-check-circle"></i> Recent Validations</h5>
+        </div>
+        <div class="card-body">
+            {% if recent_validations %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Filename</th>
+                                <th>Status</th>
+                                <th>Total Rows</th>
+                                <th>Valid Rows</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for validation in recent_validations %}
+                            <tr>
+                                <td>{{ validation.original_filename }}</td>
+                                <td>
+                                    {% if validation.status == 'COMPLETED' %}
+                                        <span class="badge bg-success">{{ validation.status }}</span>
+                                    {% elif validation.status == 'FAILED' %}
+                                        <span class="badge bg-danger">{{ validation.status }}</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ validation.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ validation.total_rows }}</td>
+                                <td>{{ validation.valid_rows }}</td>
+                                <td>{{ validation.created_at|date:"M d, Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">No validations yet. <a href="{% url 'validator:upload' %}">Validate your data</a></p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

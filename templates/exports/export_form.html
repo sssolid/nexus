@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Create Export - Crown Nexus{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4"><i class="fas fa-download"></i> Create New Export</h1>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Export Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Export Name</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Export Format</label>
+                            <select class="form-select" name="format" required>
+                                <option value="CSV">CSV</option>
+                                <option value="EXCEL">Excel (XLSX)</option>
+                                <option value="JSON">JSON</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Fields to Include</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="fields" value="part_number" checked>
+                                <label class="form-check-label">Part Number</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="fields" value="name" checked>
+                                <label class="form-check-label">Product Name</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="fields" value="price" checked>
+                                <label class="form-check-label">Price</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="fields" value="stock">
+                                <label class="form-check-label">Stock Quantity</label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-download"></i> Create Export
+                            </button>
+                            <a href="{% url 'exports:export_list' %}" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

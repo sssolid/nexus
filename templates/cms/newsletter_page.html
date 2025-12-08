@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block title %}{{ page.title }} - Crown Nexus{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% pageurl page.get_parent %}">Newsletters</a></li>
+                    <li class="breadcrumb-item active">{{ page.title }}</li>
+                </ol>
+            </nav>
+
+            <article>
+                <header class="mb-4">
+                    <h1>{{ page.title }}</h1>
+                    <p class="text-muted">
+                        <i class="fas fa-calendar"></i> {{ page.date|date:"F d, Y" }}
+                    </p>
+                    <p class="lead">{{ page.intro }}</p>
+                </header>
+
+                <div class="content">
+                    {{ page.body }}
+                </div>
+            </article>
+
+            <!-- Navigation -->
+            <hr class="my-5">
+            <div class="row">
+                {% with page.get_prev_sibling as prev %}
+                    {% if prev %}
+                    <div class="col-6 text-start">
+                        <a href="{% pageurl prev %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </a>
+                    </div>
+                    {% endif %}
+                {% endwith %}
+                
+                {% with page.get_next_sibling as next %}
+                    {% if next %}
+                    <div class="col-6 text-end">
+                        <a href="{% pageurl next %}" class="btn btn-outline-primary">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{% pageurl page.get_parent %}" class="btn btn-secondary">
+                    <i class="fas fa-list"></i> Back to All Newsletters
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
