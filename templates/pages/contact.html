@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - Crown Data Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="my-5">
+                <h1 class="mb-4">Contact Us</h1>
+                <p class="lead">Get in touch with Crown Automotive Sales Co., Inc. for support, inquiries, or assistance with the Crown Data Portal.</p>
+                <hr class="my-4">
+
+                <div class="row mt-5">
+                    <!-- Contact Information -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h3 class="h5 mb-4"><i class="fas fa-building text-primary"></i> Main Office</h3>
+                                <address>
+                                    <strong>Crown Automotive Sales Co., Inc.</strong><br>
+                                    83 Enterprise Drive<br>
+                                    Marshfield, MA 02050<br>
+                                    United States
+                                </address>
+
+                                <h4 class="h6 mt-4 mb-3"><i class="fas fa-phone text-primary"></i> Phone</h4>
+                                <p class="mb-2">
+                                    <strong>Toll Free:</strong> <a href="tel:+18003439666">800-343-9666</a>
+                                </p>
+                                <p class="mb-0">
+                                    <strong>Local:</strong> <a href="tel:+17813193100">781-319-3100</a>
+                                </p>
+
+                                <h4 class="h6 mt-4 mb-3"><i class="fas fa-envelope text-primary"></i> Email</h4>
+                                <p class="mb-0">
+                                    <strong>Portal Support:</strong> <a href="mailto:support@crowndataportal.com">support@crowndataportal.com</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Support Categories -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h3 class="h5 mb-4"><i class="fas fa-headset text-primary"></i> Support Categories</h3>
+
+                                <div class="mb-4">
+                                    <h4 class="h6"><i class="fas fa-user-circle"></i> Account Issues</h4>
+                                    <p class="text-muted small mb-0">Registration, login problems, password resets, account approvals</p>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h4 class="h6"><i class="fas fa-database"></i> Data & Product Information</h4>
+                                    <p class="text-muted small mb-0">Part number inquiries, product specifications, data accuracy questions</p>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h4 class="h6"><i class="fas fa-download"></i> Export & Validation</h4>
+                                    <p class="text-muted small mb-0">Data exports, validation tools, file format assistance</p>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h4 class="h6"><i class="fas fa-bug"></i> Technical Issues</h4>
+                                    <p class="text-muted small mb-0">Portal errors, performance problems, browser compatibility</p>
+                                </div>
+
+                                <div class="mb-0">
+                                    <h4 class="h6"><i class="fas fa-question-circle"></i> General Inquiries</h4>
+                                    <p class="text-muted small mb-0">Portal features, training, feedback, and suggestions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Hours -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h3 class="h5 mb-4"><i class="fas fa-clock text-primary"></i> Support Hours</h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Phone Support:</strong></p>
+                                <p class="text-muted">Monday - Friday: 8:00 AM - 5:00 PM EST</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Email Support:</strong></p>
+                                <p class="text-muted">24/7 - We typically respond within 1 business day</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h3 class="h5 mb-4"><i class="fas fa-link text-primary"></i> Quick Links</h3>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-sign-in-alt"></i> Portal Login
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-user-plus"></i> Register Account
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="/" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-home"></i> Home Page
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Crown Automotive -->
+                <div class="card mt-4 bg-light">
+                    <div class="card-body">
+                        <h3 class="h5 mb-3"><i class="fas fa-info-circle text-primary"></i> About the Crown Data Portal</h3>
+                        <p>
+                            The Crown Data Portal is a private reference system designed exclusively for authorized Crown Automotive
+                            customers and business partners. This portal provides access to comprehensive automotive parts information
+                            and data management tools for reference purposes.
+                        </p>
+                        <p class="mb-0">
+                            Crown Automotive Sales Co., Inc. has been a leading manufacturer and distributor of quality replacement parts
+                            for Jeep® vehicles since 1963. With warehouses in Massachusetts, Spain, and the Czech Republic, we maintain
+                            one of the industry's largest inventories of replacement parts for Jeep® vehicles from 1942 to present.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Legal Disclaimer -->
+                <div class="alert alert-info mt-4">
+                    <h4 class="h6 mb-2"><i class="fas fa-exclamation-circle"></i> Legal Disclaimer</h4>
+                    <p class="small mb-0">
+                        Crown Automotive Sales Co., Inc. is not affiliated with FCA US LLC or Stellantis NV. Jeep® is a registered
+                        trademark of FCA US LLC. Part numbers listed in this portal are used for reference purposes only. No implication
+                        is made that the actual products are the product of the original equipment manufacturer. This portal is intended
+                        for fast reference use and is not a point-of-sale system.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -17,19 +17,21 @@ from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
+from apps.cms import views as static_views
+
 urlpatterns = [
     # Django Admin
     path('admin/', admin.site.urls),
-    
+
     # Wagtail CMS
     path('cms/', include(wagtailadmin_urls)),
     path('documents/', include(wagtaildocs_urls)),
-    
+
     # API Documentation
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    
+
     # App URLs
     path('accounts/', include('apps.accounts.urls')),
     path('products/', include('apps.products.urls')),
@@ -37,13 +39,18 @@ urlpatterns = [
     path('exports/', include('apps.exports.urls')),
     path('validator/', include('apps.validator.urls')),
     path('media-library/', include('apps.media_library.urls')),
-    
+
     # API URLs
     path('api/v1/', include('apps.api.urls')),
-    
+
     # Health check
     path('health/', include('health_check.urls')),
-    
+
+    # Static Pages (must come before Wagtail catch-all)
+    path('terms/', static_views.terms_of_service, name='terms'),
+    path('privacy/', static_views.privacy_policy, name='privacy'),
+    path('contact/', static_views.contact_us, name='contact'),
+
     # Wagtail pages (should be last to catch all remaining URLs)
     path('', include(wagtail_urls)),
 ]
@@ -52,7 +59,7 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    
+
     # Django Debug Toolbar
     if 'debug_toolbar' in settings.INSTALLED_APPS:
         import debug_toolbar

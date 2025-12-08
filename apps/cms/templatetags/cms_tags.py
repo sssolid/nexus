@@ -152,7 +152,7 @@ def get_user_menu(context):
 
     menu_items = [
         {"url": "/accounts/profile/", "title": "Profile", "icon": "user"},
-        {"url": "/accounts/logout/", "title": "Logout", "icon": "sign-out-alt"},
+        {"url": "/accounts/logout/", "title": "Logout", "icon": "sign-out-alt", "method": "POST"},
     ]
 
     return menu_items
