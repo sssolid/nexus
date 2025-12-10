@@ -42,7 +42,8 @@ SILKY_MAX_REQUEST_BODY_SIZE = -1  # Silk takes anything
 SILKY_MAX_RESPONSE_BODY_SIZE = 1024  # If response body>1024kb, ignore
 
 # Email backend for development
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Replaced in .env
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Disable HTTPS redirects in development
 SECURE_SSL_REDIRECT = False

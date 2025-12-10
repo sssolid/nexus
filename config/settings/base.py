@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     "apps.cms",
     "apps.accounts",
     "apps.products",
+    "apps.autocare",
     "apps.aces_pies",
     "apps.pricing",
     "apps.media_library",
@@ -301,7 +302,8 @@ EMAIL_PORT = env.int("EMAIL_PORT", default=587)
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
 EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@nexus.com")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@crowndataportal.com")
+REGISTRATION_NOTIFICATION_EMAIL = env("REGISTRATION_NOTIFICATION_EMAIL", default="support@crowndataportal.com")
 
 # Logging Configuration
 LOG_DIR = "/var/log/django"
