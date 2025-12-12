@@ -1,0 +1,30 @@
+Crown Data Portal - New Registration Pending Approval
+======================================================
+
+⚠️ ACTION REQUIRED ⚠️
+
+A new customer has verified their email and is awaiting approval to access the Crown Data Portal.
+
+CUSTOMER INFORMATION:
+---------------------
+Name:       {{ user.full_name }}
+Email:      {{ user.email }}
+Company:    {{ user.company_name|default:"Not provided" }}
+Phone:      {{ user.phone_number|default:"Not provided" }}
+Registered: {{ user.created_at|date:"F d, Y g:i A" }}
+
+NEXT STEPS:
+-----------
+1. Review the user's information
+2. Verify their company/account details
+3. Assign an internal customer number
+4. Approve or reject the registration
+
+Review in Admin Panel:
+{{ approval_url }}
+
+The user will receive an email notification once their account is approved.
+
+----------------------------------------
+This is an automated notification from Crown Data Portal.
+You're receiving this because you're part of the Sales team.

@@ -8,6 +8,9 @@ whitenoise
 # Database
 psycopg2-binary
 psycopg
+jpype1
+jaydebeapi
+pyodbc
 
 # Web Server
 gunicorn

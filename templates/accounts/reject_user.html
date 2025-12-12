@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Reject User - {{ user.full_name }}{% endblock %}
+
+{% block content %}
+    <div class="container my-4">
+
+        <h1 class="mb-4 text-danger">
+            <i class="fas fa-user-times"></i>
+            Reject User Registration
+        </h1>
+
+        <!-- Warning Banner -->
+        <div class="alert alert-danger">
+            <strong>Warning:</strong>
+            Rejecting this registration will permanently deny access to the system.
+            The user account will remain in the database but will not be able to log in.
+        </div>
+
+        <!-- User Information Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">User Information</h5>
+            </div>
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Name:</strong> {{ user.full_name }}</p>
+                        <p>
+                            <strong>Email:</strong>
+                            <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                        </p>
+
+                        {% if user.phone_number %}
+                            <p><strong>Phone:</strong> {{ user.phone_number }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        {% if user.company_name %}
+                            <p><strong>Company:</strong> {{ user.company_name }}</p>
+                        {% endif %}
+
+                        <p>
+                            <strong>Registered:</strong>
+                            {{ approval.created_at|date:"M d, Y g:i A" }}
+                        </p>
+
+                        <p>
+                            <strong>Email Verified:</strong>
+                            {% if user.is_verified %}
+                                <span class="badge bg-success">Yes</span>
+                            {% else %}
+                                <span class="badge bg-danger">No</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Rejection Form -->
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Rejection Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="id_notes" class="form-label">
+                            Reason for Rejection *
+                        </label>
+                        <textarea
+                                name="notes"
+                                id="id_notes"
+                                rows="4"
+                                class="form-control"
+                                required
+                                placeholder="e.g., Company not verified, duplicate account, suspicious registration..."
+                        ></textarea>
+                        <div class="form-text">
+                            This reason is for internal records only and will not be sent automatically to the user.
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>What happens next:</strong>
+                        <ul class="mb-0">
+                            <li>User account is marked as rejected</li>
+                            <li>User will be unable to log in</li>
+                            <li>No automatic rejection email is sent</li>
+                            <li>This action is auditable later</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+
+                        <a href="{% url 'accounts:pending_approvals_list' %}"
+                           class="btn btn-secondary">
+                            Cancel
+                        </a>
+
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-times"></i>
+                            Reject Registration
+                        </button>
+
+                        <a href="{% url 'accounts:approve_user' approval.user_id %}"
+                           class="btn btn-success">
+                            Approve Instead
+                        </a>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

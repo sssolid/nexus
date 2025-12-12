@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Email Verified - Crown Data Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+                    </div>
+                    
+                    <h2 class="mb-3">Email Verified!</h2>
+                    
+                    <p class="lead">Your email has been successfully verified.</p>
+                    
+                    <div class="alert alert-warning text-start my-4">
+                        <h5><i class="fas fa-hourglass-half"></i> Registration Pending Approval</h5>
+                        <p class="mb-0">
+                            Your registration is now being reviewed by our sales team. 
+                            You will receive an email notification once your account has been approved.
+                        </p>
+                    </div>
+                    
+                    <div class="text-muted">
+                        <p><small>
+                            <i class="fas fa-clock"></i> This typically takes 1-2 business days.
+                        </small></p>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <a href="/" class="btn btn-primary">
+                        <i class="fas fa-home"></i> Return to Home
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h5><i class="fas fa-question-circle"></i> What Can I Do While I Wait?</h5>
+                    <ul class="mb-0">
+                        <li>Make sure you can receive emails from our domain</li>
+                        <li>Check your spam/junk folder if you don't see our approval email</li>
+                        <li>Contact our support team if you have any questions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

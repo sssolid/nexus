@@ -1,0 +1,19 @@
+Crown Data Portal - Registration Update
+========================================
+
+Dear {{ user.first_name }},
+
+Thank you for your interest in the Crown Data Portal. After reviewing your registration, we're unable to approve your account at this time.
+
+{% if reason %}
+Reason: {{ reason }}
+{% endif %}
+
+If you believe this was in error or would like to discuss your registration further, please contact our support team at {{ support_email }}.
+
+We appreciate your interest in Crown Automotive Sales Co.
+
+----------------------------------------
+Crown Automotive Sales Co., Inc.
+Marshfield, MA
+{{ support_email }}

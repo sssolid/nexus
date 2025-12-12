@@ -51,6 +51,11 @@ urlpatterns = [
     path('privacy/', static_views.privacy_policy, name='privacy'),
     path('contact/', static_views.contact_us, name='contact'),
 
+    path('cms/pending-approvals/', include(
+        ('apps.accounts.wagtail_views', 'pending_approvals'),
+        namespace='pending_approvals'
+    )),
+
     # Wagtail pages (should be last to catch all remaining URLs)
     path('', include(wagtail_urls)),
 ]

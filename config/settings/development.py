@@ -60,6 +60,12 @@ LOGGING['loggers']['django.db.backends'] = {
     'propagate': False,
 }
 
+TEMPLATES[0]["APP_DIRS"] = False
+TEMPLATES[0]["OPTIONS"]["loaders"] = [
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+]
+
 # Cache - use dummy cache for development (optional)
 # Uncomment to disable caching in development
 # CACHES = {

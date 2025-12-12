@@ -24,13 +24,16 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Auto-discover tasks from all registered Django apps
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
-
 # Celery Beat Schedule for periodic tasks
 app.conf.beat_schedule = {
-    'sync-filemaker-data-hourly': {
-        'task': 'apps.data_sync.tasks.sync_filemaker_data',
-        'schedule': crontab(minute=0),  # Every hour
+    "sync-filemaker-every-configured-interval": {
+        "task": "apps.data_sync.tasks.sync_filemaker_data",
+        "schedule": crontab(minute="*/30"),  # safe default
     },
+    # 'sync-filemaker-data-hourly': {
+    #     'task': 'apps.data_sync.tasks.sync_filemaker_data',
+    #     'schedule': crontab(minute=0),  # Every hour
+    # },
     'process-scheduled-exports-every-15-min': {
         'task': 'apps.exports.tasks.process_scheduled_exports',
         'schedule': crontab(minute='*/15'),  # Every 15 minutes

@@ -43,9 +43,6 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     container_name: nexus_web
-    command: >
-      sh -c "python manage.py collectstatic --noinput &&
-             gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --reload"
     volumes:
       - .:/app/src
       - static_volume:/app/staticfiles
@@ -53,6 +50,9 @@ services:
       - logs_volume:/var/log/django
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.development
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - DOCKERIZED=1
     env_file:
       - .env
     ports:
@@ -71,10 +71,17 @@ services:
       dockerfile: docker/Dockerfile
     container_name: nexus_celery_worker
     command: celery -A config worker -l info --concurrency=4
+    entrypoint: ["/app/entrypoint.sh"]
     volumes:
       - .:/app/src
       - media_volume:/app/media
       - logs_volume:/var/log/django
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.development
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - MIGRATE=false
+      - DOCKERIZED=1
     env_file:
       - .env
     depends_on:
@@ -89,9 +96,16 @@ services:
       dockerfile: docker/Dockerfile
     container_name: nexus_celery_beat
     command: celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    entrypoint: ["/app/entrypoint.sh"]
     volumes:
       - .:/app/src
       - logs_volume:/var/log/django
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.development
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - MIGRATE=false
+      - DOCKERIZED=1
     env_file:
       - .env
     depends_on:
@@ -106,8 +120,15 @@ services:
       dockerfile: docker/Dockerfile
     container_name: nexus_flower
     command: celery -A config flower --port=5555
+    entrypoint: ["/app/entrypoint.sh"]
     ports:
       - "5555:5555"
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.development
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - MIGRATE=false
+      - DOCKERIZED=1
     env_file:
       - .env
     volumes:

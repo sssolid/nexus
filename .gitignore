@@ -110,3 +110,5 @@ docs/_build/
 tmp/
 temp/
 *.tmp
+/services/fmjdbc.jar
+/services/jt400.jar

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Pending Approvals - Crown Nexus{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <h1 class="mb-4">
+        <i class="fas fa-user-check"></i> Pending User Approvals
+        <span class="badge bg-primary">{{ pending_approval|length }}</span>
+    </h1>
+
+    {% if pending_approval %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Company</th>
+                    <th>Contact</th>
+                    <th>Registered</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for approval in pending_approval %}
+                <tr>
+                    <td>{{ approval.user.full_name }}</td>
+                    <td>{{ approval.user.company_name|default:"—" }}</td>
+                    <td>
+                        <div><strong>Email:</strong> {{ approval.user.email }}</div>
+                        {% if approval.user.phone_number %}
+                        <div><strong>Phone:</strong> {{ approval.user.phone_number }}</div>
+                        {% endif %}
+                    </td>
+                    <td>{{ approval.created_at|timesince }} ago</td>
+                    <td>
+                        <a href="{% url 'accounts:approve_user' approval.user_id %}"
+                           class="btn btn-success btn-sm">Approve</a>
+
+                        <a href="{% url 'accounts:reject_user' approval.user_id %}"
+                           class="btn btn-danger btn-sm">Reject</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i> No pending approvals!
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

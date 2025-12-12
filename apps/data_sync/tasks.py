@@ -1,67 +1,86 @@
 """
 Celery tasks for data synchronization.
 """
-
+from django.apps import apps
 from celery import shared_task
 from django.utils import timezone
 
+from apps.data_sync.models import SyncConfiguration, SyncJob, SyncLog
+from services.filemaker_client import FileMakerClient
+from services.mapping_engine import apply_mapping
+from django.conf import settings
 
-@shared_task
-def sync_filemaker_data():
-    """
-    Synchronize data from FileMaker.
-    Runs hourly via Celery Beat.
-    """
-    from apps.products.models import Product
 
-    from .models import SyncConfiguration, SyncJob, SyncLog
-
-    # Get active sync configurations
+@shared_task(bind=True, max_retries=3)
+def sync_filemaker_data(self):
     configs = SyncConfiguration.objects.filter(is_enabled=True)
-
     results = []
-    for config in configs:
+
+    client = FileMakerClient(password=settings.FILEMAKER_PASSWORD)
+
+    for cfg in configs:
         job = SyncJob.objects.create(
-            sync_type="INCREMENTAL",
-            filemaker_layout=config.filemaker_layout,
+            sync_type="INCREMENTAL" if cfg.enable_incremental else "FULL",
+            filemaker_layout=cfg.filemaker_layout,
             status="RUNNING",
+            started_at=timezone.now(),
         )
-        job.started_at = timezone.now()
-        job.save()
 
         try:
-            # Mock sync logic (replace with actual FileMaker API calls)
-            # This would normally fetch data from FileMaker and update Django models
+            # Query FileMaker
+            fm_query = cfg.filemaker_query or None
+            fm_rows = client.fetch(cfg.filemaker_layout, fm_query)
 
-            # Log sync progress
-            SyncLog.objects.create(
-                sync_job=job,
-                level="INFO",
-                message=f"Starting sync for layout: {config.filemaker_layout}",
-            )
+            job.records_fetched = len(fm_rows)
+            job.save()
 
-            # Simulate fetching records
-            job.records_fetched = 100
-            job.records_created = 5
-            job.records_updated = 90
-            job.records_failed = 5
+            # Determine target Django model
+            TargetModel = apps.get_model("products", cfg.target_model_name)
 
-            # Mark as completed
+            to_create = []
+            to_update = []
+            existing = {
+                obj.external_id: obj
+                for obj in TargetModel.objects.filter(
+                    external_id__in=[r["id"] for r in fm_rows]
+                )
+            }
+
+            for row in fm_rows:
+                mapped = apply_mapping(row, cfg.target_model)
+
+                external_id = mapped["external_id"]
+
+                if external_id in existing:
+                    obj = existing[external_id]
+                    for k, v in mapped.items():
+                        setattr(obj, k, v)
+                    to_update.append(obj)
+                else:
+                    to_create.append(TargetModel(**mapped))
+
+            # Bulk operations
+            if to_create:
+                TargetModel.objects.bulk_create(to_create, batch_size=cfg.batch_size)
+
+            if to_update:
+                TargetModel.objects.bulk_update(
+                    to_update,
+                    fields=list(mapped.keys()),
+                    batch_size=cfg.batch_size,
+                )
+
+            # Finalize job
+            job.records_created = len(to_create)
+            job.records_updated = len(to_update)
             job.status = "COMPLETED"
             job.completed_at = timezone.now()
             job.save()
 
-            # Update config
-            config.last_successful_sync = timezone.now()
-            config.save()
+            cfg.last_successful_sync = timezone.now()
+            cfg.save()
 
-            SyncLog.objects.create(
-                sync_job=job,
-                level="INFO",
-                message=f"Sync completed successfully: {job.records_updated} updated, {job.records_created} created",
-            )
-
-            results.append(f"Synced {config.name}: {job.records_fetched} records")
+            results.append(f"Synced {cfg.name}: {job.records_fetched}")
 
         except Exception as e:
             job.status = "FAILED"
@@ -70,10 +89,12 @@ def sync_filemaker_data():
             job.save()
 
             SyncLog.objects.create(
-                sync_job=job, level="ERROR", message=f"Sync failed: {str(e)}"
+                sync_job=job,
+                level="ERROR",
+                message=f"Sync failed: {str(e)}",
             )
 
-            results.append(f"Failed to sync {config.name}: {str(e)}")
+            results.append(f"Failed {cfg.name}: {str(e)}")
 
     return results
 

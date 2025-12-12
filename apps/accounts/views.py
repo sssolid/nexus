@@ -76,7 +76,7 @@ class UserRegistrationView(CreateView):
             subject,
             text_body,
             settings.DEFAULT_FROM_EMAIL,
-            [settings.REGISTRATION_NOTIFICATION_EMAIL],
+            [settings.SUPPORT_EMAIL],
         )
         msg.attach_alternative(html_body, "text/html")
         msg.send()

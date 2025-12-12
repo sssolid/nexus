@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Registration Pending Approval</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #ffc107;
+            color: #000;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border: 1px solid #dee2e6;
+        }
+        .info-box {
+            background-color: white;
+            padding: 15px;
+            border-left: 4px solid #0d6efd;
+            margin: 20px 0;
+        }
+        .info-box strong {
+            display: inline-block;
+            width: 150px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #198754;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            font-size: 12px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚠️ New Registration Requires Review</h1>
+    </div>
+    
+    <div class="content">
+        <h2>New Customer Registration</h2>
+        
+        <p>A new customer has verified their email and is awaiting approval to access the Crown Data Portal.</p>
+        
+        <div class="info-box">
+            <p><strong>Name:</strong> {{ user.full_name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Company:</strong> {{ user.company_name|default:"Not provided" }}</p>
+            <p><strong>Phone:</strong> {{ user.phone_number|default:"Not provided" }}</p>
+            <p><strong>Registered:</strong> {{ user.created_at|date:"F d, Y g:i A" }}</p>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="{{ approval_url }}" class="button">Review in Admin Panel</a>
+        </div>
+        
+        <p><strong>Action Required:</strong></p>
+        <ol>
+            <li>Review the user's information</li>
+            <li>Verify their company/account details</li>
+            <li>Assign an internal customer number</li>
+            <li>Approve or reject the registration</li>
+        </ol>
+        
+        <p>The user will receive an email notification once their account is approved.</p>
+    </div>
+    
+    <div class="footer">
+        <p>
+            This is an automated notification from Crown Data Portal.<br>
+            You're receiving this because you're part of the Sales team.
+        </p>
+    </div>
+</body>
+</html>

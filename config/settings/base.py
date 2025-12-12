@@ -31,6 +31,8 @@ DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
+SITE_URL = env("SITE_URL", default="http://localhost:8000")
+
 # Application definition
 INSTALLED_APPS = [
     # Django apps
@@ -77,6 +79,7 @@ INSTALLED_APPS = [
     "health_check.cache",
     "health_check.storage",
     # Custom apps
+    "apps.core",
     "apps.cms",
     "apps.accounts",
     "apps.products",
@@ -241,8 +244,8 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
-CELERY_RESULT_EXPIRES = 3600  # 1 hour
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_RESULT_EXPIRES = 3600
 
 # Django REST Framework
 REST_FRAMEWORK = {
@@ -303,10 +306,20 @@ EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
 EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@crowndataportal.com")
-REGISTRATION_NOTIFICATION_EMAIL = env("REGISTRATION_NOTIFICATION_EMAIL", default="support@crowndataportal.com")
+SUPPORT_EMAIL = env("SUPPORT_EMAIL", default="support@crowndataportal.com")
+# Email Verification Settings
+EMAIL_VERIFICATION_TIMEOUT = 86400  # 24 hours in seconds
+# Admin Notification Emails (in addition to sales team emails from database)
+ADMIN_NOTIFICATION_EMAILS = env.list(
+    'ADMIN_NOTIFICATION_EMAILS',
+    default=['support@crowndataportal.com']  # Update with actual support email
+)
 
 # Logging Configuration
-LOG_DIR = "/var/log/django"
+if os.environ.get("DOCKERIZED"):
+    LOG_DIR = "/var/log/django"
+else:
+    LOG_DIR = BASE_DIR / "logs"
 os.makedirs(LOG_DIR, exist_ok=True)
 
 LOGGING = {

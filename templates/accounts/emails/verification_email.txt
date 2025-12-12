@@ -1,0 +1,24 @@
+Crown Data Portal - Email Verification
+========================================
+
+Welcome {{ user.first_name }}!
+
+Thank you for registering with Crown Data Portal. To complete your registration, please verify your email address by clicking the link below:
+
+{{ verification_url }}
+
+What happens next?
+------------------
+1. Click the verification link above
+2. Your email will be verified
+3. Our sales team will review your registration
+4. You'll receive an email once your account is approved
+
+This link will expire in 24 hours.
+
+If you didn't create an account with Crown Data Portal, please ignore this email.
+
+----------------------------------------
+Crown Automotive Sales Co., Inc.
+Marshfield, MA
+Questions? Contact us at {{ support_email }}

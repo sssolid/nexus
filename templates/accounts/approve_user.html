@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Approve User - {{ user.full_name }}{% endblock %}
+
+{% block content %}
+    <div class="container my-4">
+
+        <h1 class="mb-4">
+            <i class="fas fa-user-check"></i>
+            Approve User Registration
+        </h1>
+
+        <!-- Warning Banner -->
+        <div class="alert alert-warning">
+            <strong>Important:</strong>
+            Before approving this user, verify their company information and ensure the correct customer number.
+        </div>
+
+        <!-- User Information Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">User Information</h5>
+            </div>
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Name:</strong> {{ user.full_name }}</p>
+                        <p><strong>Email:</strong>
+                            <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                        </p>
+
+                        {% if user.phone_number %}
+                            <p><strong>Phone:</strong> {{ user.phone_number }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        {% if user.company_name %}
+                            <p><strong>Company:</strong> {{ user.company_name }}</p>
+                        {% endif %}
+
+                        <p><strong>Registered:</strong>
+                            {{ approval.created_at|date:"M d, Y g:i A" }}
+                        </p>
+
+                        <p><strong>Email Verified:</strong>
+                            {% if user.is_verified %}
+                                <span class="badge bg-success">Yes</span>
+                            {% else %}
+                                <span class="badge bg-danger">No</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Approval Form -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Approval Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="id_customer_number" class="form-label">
+                            Customer Number *
+                        </label>
+                        <input type="text"
+                               name="customer_number"
+                               id="id_customer_number"
+                               class="form-control"
+                               required
+                               placeholder="e.g., CUST-12345">
+                        <div class="form-text">
+                            Enter the customer number from your legacy database/system.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_notes" class="form-label">
+                            Internal Notes (Optional)
+                        </label>
+                        <textarea name="notes"
+                                  id="id_notes"
+                                  rows="4"
+                                  class="form-control"
+                                  placeholder="e.g., Verified with John Smith, existing customer..."></textarea>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>What happens next:</strong>
+                        <ol class="mb-0">
+                            <li>Customer number is assigned to the user</li>
+                            <li>User account is activated</li>
+                            <li>The user receives a confirmation email</li>
+                            <li>The user can immediately log in</li>
+                        </ol>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+
+                        <a href="{% url 'accounts:pending_approvals_list' %}"
+                           class="btn btn-secondary">
+                            Cancel
+                        </a>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i>
+                            Approve Registration
+                        </button>
+
+                        <a href="{% url 'accounts:reject_user' approval.user_id %}"
+                           class="btn btn-danger">
+                            Reject Instead
+                        </a>
+
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

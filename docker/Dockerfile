@@ -6,31 +6,30 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ENV PATH="$JAVA_HOME/bin:${PATH}"
+
 # Create app structure
 RUN mkdir -p /app/src \
            /var/log/django \
            /app/staticfiles \
            /app/media
 
-# Set work directory
 WORKDIR /app/src
 
-# Install system dependencies
+# System dependencies
 RUN apt-get update && apt-get install -y \
     postgresql-client \
     libpq-dev \
-    gcc \
-    g++ \
-    build-essential \
-    curl \
-    git \
+    gcc g++ build-essential \
+    curl git \
+    openjdk-21-jdk \
     libmagic1 \
-    libjpeg-dev \
-    libpng-dev \
-    libwebp-dev \
-    libxml2-dev \
-    libxslt1-dev \
+    libjpeg-dev libpng-dev libwebp-dev \
+    libxml2-dev libxslt1-dev \
     openssh-client \
+    unixodbc unixodbc-dev \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 # Python dependencies
@@ -41,12 +40,18 @@ RUN pip install --upgrade pip && \
 # Copy project
 COPY . /app/src
 
-# Create non-root user
+# Create non-root user & correct permissions
 RUN useradd -m -u 1000 django && \
-    chown -R django:django /app /var/log/django
+    chown django:django /app && \
+    chmod 755 /app && \
+    chown -R django:django /var/log/django /app/staticfiles /app/media
 
 USER django
 
 EXPOSE 8000
+
+# Entrypoint
+COPY docker/entrypoint.sh /app/entrypoint.sh
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]

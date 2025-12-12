@@ -47,7 +47,7 @@ bidict==0.23.1
     # via python-socketio
 billiard==4.2.4
     # via celery
-black==25.11.0
+black==25.12.0
     # via -r requirements/development.in
 blinker==1.9.0
     # via flask
@@ -98,7 +98,7 @@ configargparse==1.7.1
     # via
     #   locust
     #   locust-cloud
-coverage[toml]==7.12.0
+coverage[toml]==7.13.0
     # via pytest-cov
 crispy-bootstrap5==2025.6
     # via -r requirements/base.in
@@ -207,7 +207,7 @@ django-permissionedforms==0.1
     # via wagtail
 django-pgviews==0.6.0
     # via -r requirements/base.in
-django-polymorphic==4.2.0
+django-polymorphic==4.3.0
     # via -r requirements/base.in
 django-ratelimit==4.1.0
     # via -r requirements/base.in
@@ -227,7 +227,7 @@ django-tasks==0.9.0
     # via
     #   modelsearch
     #   wagtail
-django-timezone-field==7.1
+django-timezone-field==7.2.1
     # via django-celery-beat
 django-treebeard==4.8.0
     # via wagtail
@@ -288,7 +288,7 @@ gevent==25.9.1
     #   geventhttpclient
     #   locust
     #   locust-cloud
-geventhttpclient==2.3.5
+geventhttpclient==2.3.7
     # via locust
 gprof2dot==2025.4.14
     # via django-silk
@@ -337,6 +337,8 @@ isort==6.1.0
     #   pylint
 itsdangerous==2.2.0
     # via flask
+jaydebeapi==1.2.3
+    # via -r requirements/base.in
 jedi==0.19.2
     # via ipython
 jinja2==3.1.6
@@ -346,6 +348,10 @@ jinja2==3.1.6
     #   sphinx
 joblib==1.5.2
     # via nltk
+jpype1==1.6.0
+    # via
+    #   -r requirements/base.in
+    #   jaydebeapi
 jsonschema==4.25.1
     # via
     #   -r requirements/base.in
@@ -356,7 +362,7 @@ kombu==5.6.1
     # via celery
 laces==0.1.2
     # via wagtail
-librt==0.7.2
+librt==0.7.3
     # via mypy
 locust==2.42.6
     # via -r requirements/development.in
@@ -407,6 +413,7 @@ packaging==25.0
     #   django-haystack
     #   dparse
     #   gunicorn
+    #   jpype1
     #   kombu
     #   pytest
     #   safety
@@ -493,7 +500,9 @@ pylint-plugin-utils==0.9.0
     # via pylint-django
 pynacl==1.6.1
     # via paramiko
-pytest==9.0.1
+pyodbc==5.3.0
+    # via -r requirements/base.in
+pytest==9.0.2
     # via
     #   -r requirements/development.in
     #   locust
@@ -632,7 +641,7 @@ tomlkit==0.13.3
     # via
     #   pylint
     #   safety
-tornado==6.5.2
+tornado==6.5.3
     # via flower
 tqdm==4.67.1
     # via nltk
@@ -675,7 +684,7 @@ tzlocal==5.3.1
     # via celery
 uritemplate==4.2.0
     # via drf-spectacular
-urllib3==2.6.0
+urllib3==2.6.2
     # via
     #   geventhttpclient
     #   requests
