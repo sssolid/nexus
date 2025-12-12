@@ -4,7 +4,7 @@ Replace the existing UserRegistrationView in apps/accounts/views.py
 """
 from django.db import transaction
 from django.contrib import messages
-from django.contrib.auth import get_user_model, login
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -13,6 +13,7 @@ from django.views.generic import CreateView
 
 from .forms import UserRegistrationForm
 from .models_verification import EmailVerification, PendingApproval
+from .security import enforce_2fa
 from .tasks import (
     send_admin_notification_email,
     send_approval_confirmation_email,
@@ -39,7 +40,7 @@ class UserRegistrationView(CreateView):
         """
         # Set user as inactive until approved
         form.instance.is_active = False
-        form.instance.is_verified = False
+        form.instance.email_verified = False
         form.instance.is_approved = False
         
         # Save user
@@ -65,9 +66,9 @@ def verify_email_view(request, token):
     verification = get_object_or_404(EmailVerification, token=token)
     
     # Check if already verified
-    if verification.is_verified:
+    if verification.email_verified:
         messages.info(request, 'Your email has already been verified.')
-        return redirect('accounts:login')
+        return redirect('two_factor:login')
     
     # Check if expired
     if verification.is_expired:
@@ -79,7 +80,7 @@ def verify_email_view(request, token):
                 reverse('accounts:resend_verification')
             )
         )
-        return redirect('accounts:login')
+        return redirect('two_factor:login')
     
     # Mark as verified
     verification.mark_verified()
@@ -120,7 +121,7 @@ def resend_verification_view(request):
         email = request.POST.get('email')
         
         try:
-            user = User.objects.get(email=email, is_verified=False)
+            user = User.objects.get(email=email, email_verified=False)
             
             # Create new verification token
             email_verification = EmailVerification.create_for_user(user)
@@ -147,6 +148,7 @@ def resend_verification_view(request):
 
 
 @login_required
+@enforce_2fa
 @user_passes_test(lambda u: u.is_staff or (u.is_employee and u.employee_role == User.EmployeeRole.SALES))
 def approve_registration_view(request, user_id):
     """
@@ -190,6 +192,7 @@ def approve_registration_view(request, user_id):
 
 
 @login_required
+@enforce_2fa
 @user_passes_test(lambda u: u.is_staff or u.is_employee and u.employee_role == User.EmployeeRole.SALES)
 def reject_registration_view(request, user_id):
     """
@@ -227,6 +230,7 @@ def reject_registration_view(request, user_id):
 
 
 @login_required
+@enforce_2fa
 @user_passes_test(lambda u: u.is_staff or u.is_employee and u.employee_role == User.EmployeeRole.SALES)
 def pending_approvals_list_view(request):
     """

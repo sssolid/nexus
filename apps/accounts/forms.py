@@ -2,28 +2,47 @@
 Forms for the accounts application.
 """
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.forms import UserCreationForm
 
 from .models import User, UserProfile
 
 
-class UserLoginForm(AuthenticationForm):
-    """Custom login form using email instead of username."""
-    
-    username = forms.EmailField(
-        label='Email',
-        widget=forms.EmailInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Enter your email',
-            'autofocus': True
-        })
-    )
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Enter your password'
-        })
-    )
+class EmailAuthenticationForm(forms.Form):
+    email = forms.EmailField(label=_("Email"), max_length=254)
+    password = forms.CharField(label=_("Password"), strip=False, widget=forms.PasswordInput)
+
+    error_messages = {
+        "invalid_login": _("Please enter a correct email and password."),
+        "inactive": _("This account is inactive."),
+    }
+
+    def __init__(self, request=None, *args, **kwargs):
+        self.request = request
+        self.user_cache = None
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        email = self.cleaned_data.get("email")
+        password = self.cleaned_data.get("password")
+
+        if email and password:
+            self.user_cache = authenticate(
+                self.request,
+                email=email,
+                password=password,
+            )
+            if self.user_cache is None:
+                raise forms.ValidationError(
+                    self.error_messages["invalid_login"],
+                    code="invalid_login",
+                )
+
+        return self.cleaned_data
+
+    def get_user(self):
+        return self.user_cache
 
 
 class UserRegistrationForm(UserCreationForm):

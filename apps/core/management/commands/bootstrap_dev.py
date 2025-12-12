@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.contrib.auth.models import Permission
 
 User = get_user_model()
 
@@ -30,7 +31,7 @@ class Command(BaseCommand):
                 "is_staff": True,
                 "is_superuser": True,
                 "is_active": True,
-                "is_verified": True,
+                "email_verified": True,
                 "is_approved": True,
                 "first_name": "Admin",
                 "last_name": "User",
@@ -39,6 +40,7 @@ class Command(BaseCommand):
 
         if created:
             admin.set_password(admin_password)
+            admin.user_permissions.set(Permission.objects.all())
             admin.save()
             self.stdout.write(
                 self.style.SUCCESS(f"Superuser created: {admin_email}/{admin_password}")
@@ -59,7 +61,7 @@ class Command(BaseCommand):
                 "is_staff": False,
                 "is_superuser": False,
                 "is_active": True,
-                "is_verified": True,
+                "email_verified": True,
                 "is_approved": True,
                 "first_name": "Test",
                 "last_name": "Customer",
@@ -79,6 +81,25 @@ class Command(BaseCommand):
         # OPTIONAL: DataMapping
         # =========================================================
         from apps.data_sync.models import DataMapping
+        from apps.products.models import ProductCategory, ProductManufacturer
+
+        ProductCategory.objects.get_or_create(
+            slug="uncategorized",
+            defaults={
+                "name": "Uncategorized",
+                "description": "Temporary category for imported products",
+                "is_active": True,
+            },
+        )
+
+        ProductManufacturer.objects.get_or_create(
+            code="UNKNOWN",
+            defaults={
+                "name": "Unknown Manufacturer",
+                "slug": "unknown-manufacturer",
+                "is_active": True,
+            },
+        )
 
         DataMapping.objects.get_or_create(
             filemaker_table="Master",
@@ -86,8 +107,21 @@ class Command(BaseCommand):
             target_model="PRODUCT",
             target_field="part_number",
             defaults={
-                "name": "Product Part Number Mapping",
-                "description": "Maps stripped AS400 part number to Product.part_number",
+                "name": "Product Part Number",
+                "description": "Maps stripped AS400 part number",
+                "is_required": True,
+                "is_active": True,
+            },
+        )
+        DataMapping.objects.get_or_create(
+            filemaker_table="Master",
+            filemaker_field="AS400_JobberPrice",
+            target_model="PRODUCT",
+            target_field="base_price",
+            defaults={
+                "name": "Default base price",
+                "description": "Temporary default until pricing sync exists",
+                "default_value": "0.00",
                 "is_required": True,
                 "is_active": True,
             },
@@ -103,9 +137,9 @@ class Command(BaseCommand):
             defaults={
                 "description": "Sync only part_number from FileMaker Master",
                 "is_enabled": True,
-                "sync_interval_minutes": 60,
+                "sync_interval_minutes": 5,
                 "filemaker_layout": "Master",
-                "filemaker_query": "",
+                "filemaker_query": "SELECT AS400_NumberStripped FROM Master",
                 "batch_size": 500,
                 "enable_incremental": False,
             },

@@ -4,10 +4,9 @@ Celery tasks for account-related email notifications.
 from celery import shared_task
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.mail import EmailMultiAlternatives, send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils.html import strip_tags
 
 User = get_user_model()
 
@@ -87,7 +86,7 @@ def send_admin_notification_email(self, user_id):
             return "No recipients found for admin notification"
         
         # Build approval URL (to admin interface)
-        approval_url = f"{settings.SITE_URL}/cms/accounts/pendingapproval/"
+        approval_url = f"{settings.SITE_URL}{reverse('accounts:pending_approvals_list')}"
         
         # Render email templates
         context = {
@@ -133,7 +132,7 @@ def send_approval_confirmation_email(self, user_id):
         user = User.objects.get(pk=user_id)
         
         # Build login URL
-        login_url = f"{settings.SITE_URL}{reverse('accounts:login')}"
+        login_url = f"{settings.SITE_URL}{reverse('two_factor:login')}"
         
         # Render email templates
         context = {

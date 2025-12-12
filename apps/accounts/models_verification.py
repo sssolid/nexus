@@ -24,7 +24,7 @@ class EmailVerification(models.Model):
     token = models.CharField(max_length=100, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     verified_at = models.DateTimeField(blank=True, null=True)
-    is_verified = models.BooleanField(default=False, db_index=True)
+    email_verified = models.BooleanField(default=False, db_index=True)
     
     class Meta:
         verbose_name = _('email verification')
@@ -43,13 +43,13 @@ class EmailVerification(models.Model):
     
     def mark_verified(self):
         """Mark email as verified."""
-        self.is_verified = True
+        self.email_verified = True
         self.verified_at = timezone.now()
-        self.save(update_fields=['is_verified', 'verified_at'])
+        self.save(update_fields=['email_verified', 'verified_at'])
         
-        # Update user's is_verified status
-        self.user.is_verified = True
-        self.user.save(update_fields=['is_verified'])
+        # Update user's email_verified status
+        self.user.email_verified = True
+        self.user.save(update_fields=['email_verified'])
     
     @classmethod
     def create_for_user(cls, user):
@@ -63,7 +63,7 @@ class EmailVerification(models.Model):
             EmailVerification: Created verification instance
         """
         # Invalidate any existing tokens
-        cls.objects.filter(user=user, is_verified=False).delete()
+        cls.objects.filter(user=user, email_verified=False).delete()
         
         # Create new token
         token = generate_verification_token()

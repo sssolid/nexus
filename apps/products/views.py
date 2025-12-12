@@ -34,23 +34,42 @@ def product_list(request):
     manufacturer_id = request.GET.get('manufacturer')
     if manufacturer_id:
         products = products.filter(manufacturer_id=manufacturer_id)
-    
-    # Filter by status
-    status = request.GET.get('status')
+
+    # Lifecycle status (ACTIVE / DISCONTINUED)
+    status = request.GET.get("status")
     if status:
         products = products.filter(status=status)
-    
+
+    # Inventory (derived)
+    stock = request.GET.get("stock")
+    if stock == "in":
+        products = products.filter(quantity_in_stock__gt=0)
+    elif stock == "out":
+        products = products.filter(quantity_in_stock=0)
+
     # Pagination
     paginator = Paginator(products, 50)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     context = {
         'products': page_obj,
         'categories': ProductCategory.objects.filter(is_active=True),
         'manufacturers': ProductManufacturer.objects.filter(is_active=True),
     }
-    return render(request, 'products/product_list.html', context)
+
+    if request.headers.get("HX-Request"):
+        return render(
+            request,
+            "products/_product_results.html",
+            context,
+        )
+
+    return render(
+        request,
+        "products/product_list.html",
+        context,
+    )
 
 
 @login_required

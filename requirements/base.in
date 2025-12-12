@@ -34,6 +34,8 @@ drf-spectacular
 # HTMX and Frontend
 django-htmx
 django-widget-tweaks
+django-crispy-forms
+crispy-bootstrap5
 
 # Wagtail CMS
 wagtail
@@ -61,6 +63,14 @@ jsonschema
 django-cors-headers
 django-ratelimit
 argon2-cffi
+django-two-factor-auth
+qrcode
+django-axes
+django-ratelimit
+django-csp
+django-auditlog
+argon2-cffi
+whitenoise
 
 # Monitoring & Logging
 sentry-sdk

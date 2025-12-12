@@ -40,18 +40,25 @@ RUN pip install --upgrade pip && \
 # Copy project
 COPY . /app/src
 
-# Create non-root user & correct permissions
+# ------------------------------------------------------------
+# Entrypoint (MUST be before USER switch)
+# ------------------------------------------------------------
+COPY docker/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Create non-root user & permissions
 RUN useradd -m -u 1000 django && \
     chown django:django /app && \
     chmod 755 /app && \
-    chown -R django:django /var/log/django /app/staticfiles /app/media
+    chown -R django:django \
+        /var/log/django \
+        /app/staticfiles \
+        /app/media \
+        /app/entrypoint.sh
 
 USER django
 
 EXPOSE 8000
 
-# Entrypoint
-COPY docker/entrypoint.sh /app/entrypoint.sh
 ENTRYPOINT ["/app/entrypoint.sh"]
-
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]

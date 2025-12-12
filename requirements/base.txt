@@ -15,6 +15,7 @@ argon2-cffi-bindings==25.1.0
 asgiref==3.11.0
     # via
     #   django
+    #   django-axes
     #   django-cors-headers
     #   django-htmx
 attrs==25.4.0
@@ -76,14 +77,18 @@ django==5.2.9
     #   crispy-bootstrap5
     #   django-admin-sortable2
     #   django-appconf
+    #   django-auditlog
+    #   django-axes
     #   django-bulk-update
     #   django-celery-beat
     #   django-celery-results
     #   django-cors-headers
     #   django-crispy-forms
     #   django-crontab
+    #   django-csp
     #   django-extensions
     #   django-filter
+    #   django-formtools
     #   django-guardian
     #   django-haystack
     #   django-health-check
@@ -91,7 +96,9 @@ django==5.2.9
     #   django-import-export
     #   django-model-utils
     #   django-modelcluster
+    #   django-otp
     #   django-permissionedforms
+    #   django-phonenumber-field
     #   django-polymorphic
     #   django-redis
     #   django-stubs-ext
@@ -99,6 +106,7 @@ django==5.2.9
     #   django-tasks
     #   django-timezone-field
     #   django-treebeard
+    #   django-two-factor-auth
     #   djangorestframework
     #   drf-spectacular
     #   easy-thumbnails
@@ -109,6 +117,10 @@ django-admin-sortable2==2.3
     # via -r requirements/base.in
 django-appconf==1.2.0
     # via django-imagekit
+django-auditlog==3.4.0
+    # via -r requirements/base.in
+django-axes==8.0.0
+    # via -r requirements/base.in
 django-bulk-update==2.2.0
     # via -r requirements/base.in
 django-celery-beat==2.8.1
@@ -123,6 +135,8 @@ django-crispy-forms==2.5
     #   crispy-bootstrap5
 django-crontab==0.7.1
     # via -r requirements/base.in
+django-csp==4.0
+    # via -r requirements/base.in
 django-environ==0.12.0
     # via -r requirements/base.in
 django-extensions==4.1
@@ -131,6 +145,8 @@ django-filter==25.2
     # via
     #   -r requirements/base.in
     #   wagtail
+django-formtools==2.5.1
+    # via django-two-factor-auth
 django-guardian==3.2.0
     # via -r requirements/base.in
 django-haystack==3.3.0
@@ -147,10 +163,14 @@ django-model-utils==5.0.0
     # via -r requirements/base.in
 django-modelcluster==6.4.1
     # via wagtail
+django-otp==1.6.3
+    # via django-two-factor-auth
 django-permissionedforms==0.1
     # via wagtail
 django-pgviews==0.6.0
     # via -r requirements/base.in
+django-phonenumber-field==8.4.0
+    # via django-two-factor-auth
 django-polymorphic==4.3.0
     # via -r requirements/base.in
 django-ratelimit==4.1.0
@@ -169,6 +189,8 @@ django-timezone-field==7.2.1
     # via django-celery-beat
 django-treebeard==4.8.0
     # via wagtail
+django-two-factor-auth==1.18.1
+    # via -r requirements/base.in
 django-widget-tweaks==1.5.0
     # via -r requirements/base.in
 djangorestframework==3.16.1
@@ -228,6 +250,7 @@ openpyxl==3.1.5
     #   wagtail
 packaging==25.0
     # via
+    #   django-csp
     #   django-haystack
     #   gunicorn
     #   jpype1
@@ -267,6 +290,7 @@ python-dateutil==2.9.0.post0
     # via
     #   -r requirements/base.in
     #   celery
+    #   django-auditlog
     #   pandas
 python-decouple==3.8
     # via -r requirements/base.in
@@ -279,6 +303,10 @@ pytz==2025.2
     #   pandas
 pyyaml==6.0.3
     # via drf-spectacular
+qrcode==8.2
+    # via
+    #   -r requirements/base.in
+    #   django-two-factor-auth
 redis==7.1.0
     # via
     #   -r requirements/base.in

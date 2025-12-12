@@ -176,7 +176,7 @@ class CustomerDashboardPage(Page):
         if not request.user.is_authenticated or not request.user.is_customer:
             from django.shortcuts import redirect
 
-            return redirect("accounts:login")
+            return redirect("two_factor:login")
         return super().serve(request)
 
     def get_context(self, request):
@@ -214,7 +214,7 @@ class EmployeeDashboardPage(Page):
         if not request.user.is_authenticated or not request.user.is_employee:
             from django.shortcuts import redirect
 
-            return redirect("accounts:login")
+            return redirect("two_factor:login")
         return super().serve(request)
 
     def get_context(self, request):

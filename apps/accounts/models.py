@@ -28,6 +28,7 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError(_('The Email field must be set'))
         email = self.normalize_email(email)
+        extra_fields.setdefault("is_active", False)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -133,7 +134,7 @@ class User(AbstractUser):
     last_login_ip = models.GenericIPAddressField(blank=True, null=True)
     
     # Account status
-    is_verified = models.BooleanField(default=False)
+    email_verified = models.BooleanField(default=False)
     is_approved = models.BooleanField(
         default=False,
         help_text=_('Designates whether this customer has been approved for access.')

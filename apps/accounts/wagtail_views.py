@@ -67,12 +67,12 @@ def approve_user_view(request, approval_id):
         
         if not customer_number:
             messages.error(request, 'Customer number is required.')
-            return redirect('pending_approvals:approve', approval_id=approval_id)
+            return redirect('pending_approvals_list:approve', approval_id=approval_id)
         
         # Check if customer number already exists
         if User.objects.filter(customer_number=customer_number).exclude(id=approval.user.id).exists():
             messages.error(request, f'Customer number {customer_number} is already in use.')
-            return redirect('pending_approvals:approve', approval_id=approval_id)
+            return redirect('pending_approvals_list:approve', approval_id=approval_id)
         
         # Approve the registration
         approval.approve(
@@ -89,7 +89,7 @@ def approve_user_view(request, approval_id):
             f'Successfully approved registration for {approval.user.email} with customer number {customer_number}.'
         )
         
-        return redirect('pending_approvals:index')
+        return redirect('pending_approvals_list:index')
     
     # GET request - show approval form
     context = {
@@ -116,7 +116,7 @@ def reject_user_view(request, approval_id):
         
         if not notes:
             messages.error(request, 'Please provide a reason for rejection.')
-            return redirect('pending_approvals:reject', approval_id=approval_id)
+            return redirect('pending_approvals_list:reject', approval_id=approval_id)
         
         # Reject the registration
         approval.reject(
@@ -129,7 +129,7 @@ def reject_user_view(request, approval_id):
             f'Registration for {approval.user.email} has been rejected.'
         )
         
-        return redirect('pending_approvals:index')
+        return redirect('pending_approvals_list:index')
     
     # GET request - show rejection form
     context = {

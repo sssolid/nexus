@@ -1,0 +1,56 @@
+services:
+  db:
+    ports:
+      - "5432:5432"
+
+  web:
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.development
+      ENV_FILE: .env.development
+      DOCKERIZED: "1"
+      SERVICE_ROLE: web
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app/src
+    command: python manage.py runserver 0.0.0.0:8000
+
+  celery_worker:
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.development
+      ENV_FILE: .env.development
+      DOCKERIZED: "1"
+      SERVICE_ROLE: worker
+    volumes:
+      - .:/app/src
+
+  celery_beat:
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.development
+      ENV_FILE: .env.development
+      DOCKERIZED: "1"
+      SERVICE_ROLE: beat
+
+  flower:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: nexus_flower
+    entrypoint: ["/app/entrypoint.sh"]
+    command: celery -A config.celery flower --port=5555
+    env_file:
+      - .env.development
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.development
+      SERVICE_ROLE: flower
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - web
+    networks:
+      - nexus_network

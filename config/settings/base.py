@@ -2,7 +2,7 @@
 Base settings for Crown Nexus System.
 
 These settings are common to all environments.
-For environment-specific settings, see development.py and production.py
+Environment-specific overrides live in development.py and production.py
 """
 
 import os
@@ -10,55 +10,97 @@ from pathlib import Path
 
 import environ
 
-# Build paths inside the project
+LOGIN_FORM_CLASS = "apps.accounts.forms.EmailAuthenticationForm"
+
+# ============================================================
+# Paths
+# ============================================================
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Initialize environment variables
+# ============================================================
+# Environment loading (ENV_FILE aware)
+# ============================================================
+
 env = environ.Env(
     DEBUG=(bool, False),
     SECRET_KEY=(str, "django-insecure-change-this-in-production"),
     ALLOWED_HOSTS=(list, []),
 )
 
-# Read .env file
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+ENV_FILE = os.environ.get("ENV_FILE", ".env")
+environ.Env.read_env(os.path.join(BASE_DIR, ENV_FILE))
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# ============================================================
+# Core Django settings
+# ============================================================
+
 SECRET_KEY = env("SECRET_KEY")
+DEBUG = env.bool("DEBUG", default=False)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG")
-
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+ALLOWED_HOSTS = env.list(
+    "ALLOWED_HOSTS",
+    default=["localhost", "127.0.0.1"],
+)
 
 SITE_URL = env("SITE_URL", default="http://localhost:8000")
+WAGTAIL_SITE_NAME = "Crown Nexus"
 
+# ============================================================
 # Application definition
+# ============================================================
+
 INSTALLED_APPS = [
-    # Django apps
+    # Django core
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.postgres",  # PostgreSQL specific features
-    # Third-party apps
+    "django.contrib.postgres",
+
+    # REST / API
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
-    "corsheaders",
+    "drf_spectacular",
+
+    # UI / UX
     "crispy_forms",
     "crispy_bootstrap5",
     "django_htmx",
+    "corsheaders",
+
+    # Background tasks
     "django_celery_beat",
     "django_celery_results",
+
+    # Security / Auth
+    "auditlog",
+    "axes",
+    "django_otp",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_static",
+    "two_factor",
+    "django.forms",
+    "csp",
+
+    # Permissions
     "guardian",
-    "import_export",
-    "adminsortable2",
+
+    # Media
     "imagekit",
     "easy_thumbnails",
-    "drf_spectacular",
+    "import_export",
+    "adminsortable2",
+
+    # Health checks
+    "health_check",
+    "health_check.db",
+    "health_check.cache",
+    "health_check.storage",
+
     # Wagtail
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
@@ -73,15 +115,11 @@ INSTALLED_APPS = [
     "wagtail",
     "modelcluster",
     "taggit",
-    # Health checks
-    "health_check",
-    "health_check.db",
-    "health_check.cache",
-    "health_check.storage",
+
     # Custom apps
     "apps.core",
     "apps.cms",
-    "apps.accounts",
+    "apps.accounts.apps.AccountsConfig",
     "apps.products",
     "apps.autocare",
     "apps.aces_pies",
@@ -93,28 +131,54 @@ INSTALLED_APPS = [
     "apps.api",
 ]
 
+# ============================================================
+# Middleware (ORDER MATTERS)
+# ============================================================
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # Static file serving
+
+    "csp.middleware.CSPMiddleware",
+
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+
+    # Authentication (ONCE)
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+
+    # OTP must follow auth
+    "django_otp.middleware.OTPMiddleware",
+
+    # Enforce 2FA
+    "apps.accounts.middleware.Enforce2FAMiddleware",
+
+    # Brute-force protection
+    "axes.middleware.AxesMiddleware",
+
+    # HTMX
     "django_htmx.middleware.HtmxMiddleware",
+
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+
+    # Wagtail redirects last
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
 ]
+
+# ============================================================
+# URLs / Templates
+# ============================================================
 
 ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            os.path.join(BASE_DIR, "templates"),
-        ],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -133,8 +197,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+# ============================================================
+# Crispy Forms
+# ============================================================
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# ============================================================
 # Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+# ============================================================
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -151,29 +224,46 @@ DATABASES = {
     }
 }
 
-# Custom User Model
+# ============================================================
+# Authentication
+# ============================================================
+
 AUTH_USER_MODEL = "accounts.User"
 
-# Password validation
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-        "OPTIONS": {
-            "min_length": 10,
-        },
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+AUTHENTICATION_BACKENDS = [
+    # 1. Security / lockout (must be first)
+    "axes.backends.AxesBackend",
+
+    # 2. Your custom gate (verified + approved)
+    "apps.accounts.auth_backends.VerifiedApprovedBackend",
+
+    # 3. Django’s core permission system (REQUIRED)
+    "django.contrib.auth.backends.ModelBackend",
+
+    # 4. Object-level permissions (optional, last)
+    "guardian.backends.ObjectPermissionBackend",
 ]
 
-# Password Hashing
+LOGIN_URL = "two_factor:login"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "two_factor:login"
+WAGTAILADMIN_BASE_URL = SITE_URL.rstrip("/") + "/cms/"
+TWO_FACTOR_LOGIN_TIMEOUT = 300
+
+# ============================================================
+# Passwords
+# ============================================================
+
+AUTH_PASSWORD_VALIDATORS = [
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 10},
+    },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+]
+
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
@@ -181,38 +271,46 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
 ]
 
-# Authentication backends
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
-    "guardian.backends.ObjectPermissionBackend",
-]
+# ============================================================
+# Sessions / Cookies
+# ============================================================
 
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+SESSION_COOKIE_AGE = 86400
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = "Lax"
+
+# ============================================================
 # Internationalization
+# ============================================================
+
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+TIME_ZONE = "America/New_York"
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# ============================================================
+# Static / Media
+# ============================================================
+
 STATIC_URL = "/static/"
-STATIC_ROOT = env("STATIC_ROOT", default=os.path.join(BASE_DIR, "staticfiles"))
-STATICFILES_DIRS = (
-    [
-        os.path.join(BASE_DIR, "static"),
-    ]
-    if os.path.exists(os.path.join(BASE_DIR, "static"))
-    else []
-)
+STATIC_ROOT = env("STATIC_ROOT", default=BASE_DIR / "staticfiles")
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# Media files
 MEDIA_URL = "/media/"
-MEDIA_ROOT = env("MEDIA_ROOT", default=os.path.join(BASE_DIR, "media"))
+MEDIA_ROOT = env("MEDIA_ROOT", default=BASE_DIR / "media")
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Redis Cache Configuration
+# ============================================================
+# Cache (Redis)
+# ============================================================
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -220,34 +318,40 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "PASSWORD": env("REDIS_PASSWORD", default=""),
-            "SOCKET_CONNECT_TIMEOUT": 5,
-            "SOCKET_TIMEOUT": 5,
-            "CONNECTION_POOL_KWARGS": {"max_connections": 50, "retry_on_timeout": True},
         },
         "KEY_PREFIX": "nexus",
-        "TIMEOUT": 300,  # 5 minutes default
+        "TIMEOUT": 300,
     }
 }
 
-# Session Configuration
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-SESSION_CACHE_ALIAS = "default"
-SESSION_COOKIE_AGE = 86400  # 24 hours
-SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = "Lax"
+# ============================================================
+# Content Security Policy (django-csp >= 4.x)
+# ============================================================
 
-# Celery Configuration
-CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://localhost:6379/1")
-CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://localhost:6379/2")
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = TIME_ZONE
-CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60
-CELERY_RESULT_EXPIRES = 3600
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": ("'self'",),
+        "style-src": ("'self'", "'unsafe-inline'"),
+        "script-src": ("'self'", "'unsafe-inline'"),
+        "img-src": ("'self'", "data:", "blob:"),
+        "font-src": ("'self'",),
+        "connect-src": ("'self'",),
+        "frame-ancestors": ("'none'",),
+    }
+}
 
+# ============================================================
+# Axes
+# ============================================================
+
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1
+AXES_RESET_ON_SUCCESS = True
+
+# ============================================================
 # Django REST Framework
+# ============================================================
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
@@ -265,147 +369,69 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_THROTTLE_CLASSES": [
-        "rest_framework.throttling.AnonRateThrottle",
-        "rest_framework.throttling.UserRateThrottle",
-    ],
-    "DEFAULT_THROTTLE_RATES": {"anon": "100/hour", "user": "1000/hour"},
 }
 
-# DRF Spectacular (API Documentation)
-SPECTACULAR_SETTINGS = {
-    "TITLE": "Crown Nexus API",
-    "DESCRIPTION": "API for nexus parts catalog with ACES/PIES data",
-    "VERSION": "1.0.0",
-    "SERVE_INCLUDE_SCHEMA": False,
-}
+# ============================================================
+# Email (baseline)
+# ============================================================
 
-# CORS Settings
-CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
-CORS_ALLOW_CREDENTIALS = True
-
-# Crispy Forms
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-CRISPY_TEMPLATE_PACK = "bootstrap5"
-
-# Wagtail Settings
-WAGTAIL_SITE_NAME = "Crown Nexus CMS"
-WAGTAILADMIN_BASE_URL = "http://localhost:8000"
-
-# File Upload Settings
-FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
-DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
-
-# Email Configuration
 EMAIL_BACKEND = env(
-    "EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend"
+    "EMAIL_BACKEND",
+    default="django.core.mail.backends.console.EmailBackend",
 )
 EMAIL_HOST = env("EMAIL_HOST", default="localhost")
 EMAIL_PORT = env.int("EMAIL_PORT", default=587)
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
 EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@crowndataportal.com")
-SUPPORT_EMAIL = env("SUPPORT_EMAIL", default="support@crowndataportal.com")
-# Email Verification Settings
-EMAIL_VERIFICATION_TIMEOUT = 86400  # 24 hours in seconds
-# Admin Notification Emails (in addition to sales team emails from database)
-ADMIN_NOTIFICATION_EMAILS = env.list(
-    'ADMIN_NOTIFICATION_EMAILS',
-    default=['support@crowndataportal.com']  # Update with actual support email
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL", default="noreply@crowndataportal.com"
+)
+SUPPORT_EMAIL = env(
+    "SUPPORT_EMAIL", default="support@crowndataportal.com"
 )
 
-# Logging Configuration
-if os.environ.get("DOCKERIZED"):
-    LOG_DIR = "/var/log/django"
-else:
-    LOG_DIR = BASE_DIR / "logs"
-os.makedirs(LOG_DIR, exist_ok=True)
+EMAIL_VERIFICATION_TIMEOUT = 86400
+ADMIN_NOTIFICATION_EMAILS = env.list(
+    "ADMIN_NOTIFICATION_EMAILS",
+    default=["support@crowndataportal.com"],
+)
+
+# ============================================================
+# Auditlog
+# ============================================================
+
+AUDITLOG_LOGENTRY_MODEL = "auditlog.LogEntry"
+AUDITLOG_INCLUDE_ALL_MODELS = False
+AUDITLOG_DISABLE_ON_RAW_SAVE = True
+
+# ============================================================
+# FileMaker
+# ============================================================
+
+FILEMAKER_HOST=env('FILEMAKER_HOST',default='127.0.0.1')
+FILEMAKER_DATABASE=env('FILEMAKER_DATABASE',default='nexus')
+FILEMAKER_USERNAME=env("FILEMAKER_USERNAME",default="admin")
+FILEMAKER_PASSWORD=env("FILEMAKER_PASSWORD",default="")
+FILEMAKER_SYNC_ENABLED=env("FILEMAKER_SYNC_ENABLED",default=False,cast=bool)
+FILEMAKER_SYNC_INTERVAL=env("FILEMAKER_SYNC_INTERVAL",default=3600,cast=int)
+
+# ============================================================
+# Logging (baseline)
+# ============================================================
+
+LOG_LEVEL = env("LOG_LEVEL", default="INFO")
 
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            "style": "{",
-        },
-        "simple": {
-            "format": "{levelname} {message}",
-            "style": "{",
-        },
-    },
-    "filters": {
-        "require_debug_false": {
-            "()": "django.utils.log.RequireDebugFalse",
-        },
-        "require_debug_true": {
-            "()": "django.utils.log.RequireDebugTrue",
-        },
-    },
     "handlers": {
         "console": {
-            "level": "INFO",
             "class": "logging.StreamHandler",
-            "formatter": "simple",
-        },
-        "file": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": f"{LOG_DIR}/django.log",
-            "maxBytes": 1024 * 1024 * 15,  # 15MB
-            "backupCount": 10,
-            "formatter": "verbose",
         },
     },
     "root": {
-        "handlers": ["console", "file"],
-        "level": env("LOG_LEVEL", default="INFO"),
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["console", "file"],
-            "level": "INFO",
-            "propagate": False,
-        },
-        "django.request": {
-            "handlers": ["console", "file"],
-            "level": "ERROR",
-            "propagate": False,
-        },
-        "celery": {
-            "handlers": ["console", "file"],
-            "level": "INFO",
-            "propagate": False,
-        },
-    },
-}
-
-# Application-specific settings
-FILEMAKER_HOST = env("FILEMAKER_HOST", default="")
-FILEMAKER_DATABASE = env("FILEMAKER_DATABASE", default="")
-FILEMAKER_USERNAME = env("FILEMAKER_USERNAME", default="")
-FILEMAKER_PASSWORD = env("FILEMAKER_PASSWORD", default="")
-FILEMAKER_SYNC_ENABLED = env.bool("FILEMAKER_SYNC_ENABLED", default=False)
-FILEMAKER_SYNC_INTERVAL = env.int("FILEMAKER_SYNC_INTERVAL", default=3600)
-
-# ACES/PIES Configuration
-ACES_VERSION = env("ACES_VERSION", default="5.0")
-PIES_VERSION = env("PIES_VERSION", default="7.2")
-
-# SFTP Configuration
-SFTP_ENABLED = env.bool("SFTP_ENABLED", default=False)
-SFTP_HOST = env("SFTP_HOST", default="")
-SFTP_PORT = env.int("SFTP_PORT", default=22)
-SFTP_USERNAME = env("SFTP_USERNAME", default="")
-SFTP_PASSWORD = env("SFTP_PASSWORD", default="")
-
-# Thumbnail Settings
-THUMBNAIL_ALIASES = {
-    "": {
-        "thumbnail": {"size": (100, 100), "crop": True},
-        "small": {"size": (300, 300), "crop": False},
-        "medium": {"size": (600, 600), "crop": False},
-        "large": {"size": (1200, 1200), "crop": False},
+        "handlers": ["console"],
+        "level": LOG_LEVEL,
     },
 }
