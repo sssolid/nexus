@@ -5,7 +5,7 @@
 {% block content %}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb m-2">
-            <li class="breadcrumb-item"><a href="{% url 'products:product_list' %}">Products</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'products:search' %}">Products</a></li>
             <li class="breadcrumb-item"><a href="?category={{ product.category.id }}">{{ product.category.name }}</a>
             </li>
             <li class="breadcrumb-item active">{{ product.part_number }}</li>
@@ -202,7 +202,7 @@
                                  alt="{{ related.name }}">
                         {% else %}
                             <div class="card-img-top product-image bg-secondary d-flex align-items-center justify-content-center">
-                                <i class="fas fa-image fa-3x text-white"></i>
+                                <i class="fas fa-image fa-3x text-default"></i>
                             </div>
                         {% endif %}
                         <div class="card-body">

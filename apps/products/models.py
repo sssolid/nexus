@@ -13,6 +13,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+from django_countries.fields import CountryField
 
 
 class ProductCategory(models.Model):
@@ -134,6 +135,12 @@ class Product(models.Model):
         ProductManufacturer,
         on_delete=models.PROTECT,
         related_name='products'
+    )
+
+    assembled_in = CountryField(
+        blank=True,
+        null=True,
+        help_text="Country where final assembly occurs"
     )
 
     # Status and availability
@@ -421,3 +428,37 @@ class ProductRelationship(models.Model):
     def __str__(self):
         """String representation of the product relationship."""
         return f"{self.product.part_number} -> {self.related_product.part_number} ({self.relationship_type})"
+
+
+class ProductCountryOfOrigin(models.Model):
+    class OriginRole(models.TextChoices):
+        PRIMARY = "PRIMARY", "Primary Origin"
+        SECONDARY = "SECONDARY", "Secondary Origin"
+        COMPONENT = "COMPONENT", "Component Origin"
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="country_origins"
+    )
+
+    country = CountryField()
+
+    role = models.CharField(
+        max_length=20,
+        choices=OriginRole.choices,
+        default=OriginRole.COMPONENT
+    )
+
+    sort_order = models.PositiveSmallIntegerField(
+        help_text="Lower numbers appear first"
+    )
+
+    class Meta:
+        ordering = ["sort_order"]
+        unique_together = [
+            ("product", "country", "role")
+        ]
+
+    def __str__(self):
+        return f"{self.product} - {self.country} ({self.role})"

@@ -112,3 +112,4 @@ temp/
 /services/fmjdbc.jar
 /services/jt400.jar
 /.venv/
+/data/

@@ -63,7 +63,7 @@ urlpatterns = [
     # Application URLs
     # --------------------------------------------------------
     path("accounts/", include("apps.accounts.urls")),
-    path("products/", include("apps.products.urls")),
+    path("products/search/", include("apps.products.urls")),
     path("aces-pies/", include("apps.aces_pies.urls")),
     path("exports/", include("apps.exports.urls")),
     path("validator/", include("apps.validator.urls")),

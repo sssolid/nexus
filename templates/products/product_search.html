@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Product Search – Crown Data Portal{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+
+    <div class="row g-0">
+
+        <!-- FILTER SIDEBAR -->
+        <aside class="col-lg-3 col-xl-2">
+
+            <div class="app-surface h-100 rounded-0 p-4">
+
+                <h5 class="mb-4">
+                    <i class="fas fa-filter text-primary"></i> Filters
+                </h5>
+
+                <form method="get"
+                      hx-get="{% url 'products:search' %}"
+                      hx-target="#product-results"
+                      hx-trigger="change delay:300ms">
+
+                    <!-- SEARCH -->
+                    <div class="mb-3">
+                        <label class="form-label">Search</label>
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               placeholder="Part number, description, notes…"
+                               value="{{ request.GET.search }}">
+                    </div>
+
+                    <!-- CATEGORY -->
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}"
+                                        {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- MANUFACTURER -->
+                    <div class="mb-3">
+                        <label class="form-label">Manufacturer</label>
+                        <select name="manufacturer" class="form-select">
+                            <option value="">All Manufacturers</option>
+                            {% for manufacturer in manufacturers %}
+                                <option value="{{ manufacturer.id }}"
+                                        {% if request.GET.manufacturer == manufacturer.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ manufacturer.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- LIFECYCLE -->
+                    <div class="mb-3">
+                        <label class="form-label">Lifecycle Status</label>
+                        <select name="status" class="form-select">
+                            <option value="">All</option>
+                            <option value="ACTIVE" {% if request.GET.status == 'ACTIVE' %}selected{% endif %}>
+                                Active
+                            </option>
+                            <option value="DISCONTINUED"
+                                    {% if request.GET.status == 'DISCONTINUED' %}selected{% endif %}>
+                                Discontinued
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- INVENTORY -->
+                    <div class="mb-4">
+                        <label class="form-label">Inventory</label>
+                        <select name="stock" class="form-select">
+                            <option value="">All</option>
+                            <option value="in" {% if request.GET.stock == 'in' %}selected{% endif %}>
+                                In Stock
+                            </option>
+                            <option value="out" {% if request.GET.stock == 'out' %}selected{% endif %}>
+                                Out of Stock
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- VEHICLE FITMENT TOGGLE (PLACEHOLDER) -->
+                    <div class="border-top pt-3 mt-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="vehicle-filter-toggle"
+                                   disabled>
+                            <label class="form-check-label text-muted"
+                                   for="vehicle-filter-toggle">
+                                Enable Vehicle Fitment (VCDB)
+                            </label>
+                        </div>
+                        <small class="text-muted d-block mt-1">
+                            Vehicle-based filtering coming soon.
+                        </small>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary w-100 mb-2">
+                            <i class="fas fa-search"></i> Apply
+                        </button>
+
+                        <a href="{% url 'products:search' %}"
+                           class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-undo"></i> Reset
+                        </a>
+                    </div>
+
+                </form>
+
+            </div>
+        </aside>
+
+        <!-- RESULTS -->
+        <main class="col-lg-9 col-xl-10">
+
+            <div class="p-4">
+
+                <!-- HEADER + EXPORT -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">
+                        <i class="fas fa-box text-primary"></i> Products
+                    </h2>
+
+                    <a href="{% url 'exports:export_form' %}"
+                       class="btn btn-success">
+                        <i class="fas fa-download"></i> Export
+                    </a>
+                </div>
+
+                <!-- ACTIVE FILTER PILLS -->
+                {% if request.GET %}
+                    <div class="mb-3 d-flex flex-wrap gap-2">
+
+                        {% for key, value in request.GET.items %}
+                            {% if value %}
+                                <span class="badge rounded-pill bg-primary">
+                                    {{ key|capfirst }}: {{ value }}
+                                    <a href="{% url 'products:search' %}"
+                                       class="ms-1 text-white text-decoration-none">
+                                        ×
+                                    </a>
+                                </span>
+                            {% endif %}
+                        {% endfor %}
+
+                    </div>
+                {% endif %}
+
+                <!-- RESULTS -->
+                <div id="product-results">
+                    {% include "products/_product_results.html" %}
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+</div>
+{% endblock %}

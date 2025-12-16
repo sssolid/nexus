@@ -23,6 +23,7 @@ asgiref==3.11.0
     #   django
     #   django-axes
     #   django-cors-headers
+    #   django-countries
     #   django-htmx
 astroid==3.3.11
     # via pylint
@@ -54,6 +55,8 @@ blinker==1.9.0
     # via flask
 brotli==1.2.0
     # via geventhttpclient
+build==1.3.0
+    # via pip-tools
 celery==5.6.0
     # via
     #   -r requirements/base.in
@@ -87,6 +90,7 @@ click==8.3.1
     #   click-repl
     #   flask
     #   nltk
+    #   pip-tools
     #   safety
     #   typer
 click-didyoumean==0.3.1
@@ -182,6 +186,8 @@ django-celery-beat==2.8.1
 django-celery-results==2.6.0
     # via -r requirements/base.in
 django-cors-headers==4.9.0
+    # via -r requirements/base.in
+django-countries==8.2.0
     # via -r requirements/base.in
 django-crispy-forms==2.5
     # via
@@ -299,7 +305,7 @@ flask==3.1.2
     #   flask-cors
     #   flask-login
     #   locust
-flask-cors==6.0.1
+flask-cors==6.0.2
     # via locust
 flask-login==0.6.3
     # via locust
@@ -432,6 +438,7 @@ openpyxl==3.1.5
 packaging==25.0
     # via
     #   black
+    #   build
     #   django-csp
     #   django-haystack
     #   dparse
@@ -465,6 +472,8 @@ pillow==12.0.0
     #   wagtail
 pillow-heif==1.1.1
     # via willow
+pip-tools==7.5.2
+    # via -r requirements/base.in
 platformdirs==4.5.1
     # via
     #   black
@@ -525,6 +534,10 @@ pynacl==1.6.1
     # via paramiko
 pyodbc==5.3.0
     # via -r requirements/base.in
+pyproject-hooks==1.2.0
+    # via
+    #   build
+    #   pip-tools
 pytest==9.0.2
     # via
     #   -r requirements/development.in
@@ -686,6 +699,7 @@ typing-extensions==4.15.0
     #   anyio
     #   beautifulsoup4
     #   cron-descriptor
+    #   django-countries
     #   django-guardian
     #   django-stubs
     #   django-stubs-ext
@@ -702,7 +716,7 @@ typing-extensions==4.15.0
     #   typing-inspection
 typing-inspection==0.4.2
     # via pydantic
-tzdata==2025.2
+tzdata==2025.3
     # via
     #   django-celery-beat
     #   faker
@@ -738,6 +752,8 @@ werkzeug==3.1.4
     #   flask-cors
     #   flask-login
     #   locust
+wheel==0.45.1
+    # via pip-tools
 whitenoise==6.11.0
     # via -r requirements/base.in
 willow[heif]==1.12.0
@@ -752,3 +768,7 @@ zope-event==6.1
     # via gevent
 zope-interface==8.1.1
     # via gevent
+
+# The following packages are considered to be unsafe in a requirements file:
+# pip
+# setuptools

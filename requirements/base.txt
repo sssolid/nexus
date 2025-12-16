@@ -17,6 +17,7 @@ asgiref==3.11.0
     #   django
     #   django-axes
     #   django-cors-headers
+    #   django-countries
     #   django-htmx
 attrs==25.4.0
     # via
@@ -30,6 +31,8 @@ beautifulsoup4==4.14.3
     #   wagtail
 billiard==4.2.4
     # via celery
+build==1.3.0
+    # via pip-tools
 celery==5.6.0
     # via
     #   -r requirements/base.in
@@ -55,6 +58,7 @@ click==8.3.1
     #   click-didyoumean
     #   click-plugins
     #   click-repl
+    #   pip-tools
 click-didyoumean==0.3.1
     # via celery
 click-plugins==1.1.1.2
@@ -128,6 +132,8 @@ django-celery-beat==2.8.1
 django-celery-results==2.6.0
     # via -r requirements/base.in
 django-cors-headers==4.9.0
+    # via -r requirements/base.in
+django-countries==8.2.0
     # via -r requirements/base.in
 django-crispy-forms==2.5
     # via
@@ -250,6 +256,7 @@ openpyxl==3.1.5
     #   wagtail
 packaging==25.0
     # via
+    #   build
     #   django-csp
     #   django-haystack
     #   gunicorn
@@ -270,6 +277,8 @@ pillow==12.0.0
     #   wagtail
 pillow-heif==1.1.1
     # via willow
+pip-tools==7.5.2
+    # via -r requirements/base.in
 prometheus-client==0.23.1
     # via flower
 prompt-toolkit==3.0.52
@@ -284,6 +293,10 @@ pynacl==1.6.1
     # via paramiko
 pyodbc==5.3.0
     # via -r requirements/base.in
+pyproject-hooks==1.2.0
+    # via
+    #   build
+    #   pip-tools
 python-crontab==3.3.0
     # via django-celery-beat
 python-dateutil==2.9.0.post0
@@ -346,13 +359,14 @@ typing-extensions==4.15.0
     # via
     #   beautifulsoup4
     #   cron-descriptor
+    #   django-countries
     #   django-guardian
     #   django-stubs-ext
     #   django-tasks
     #   exceptiongroup
     #   psycopg
     #   referencing
-tzdata==2025.2
+tzdata==2025.3
     # via
     #   django-celery-beat
     #   kombu
@@ -376,6 +390,8 @@ wagtail-generic-chooser==0.7
     # via -r requirements/base.in
 wcwidth==0.2.14
     # via prompt-toolkit
+wheel==0.45.1
+    # via pip-tools
 whitenoise==6.11.0
     # via -r requirements/base.in
 willow[heif]==1.12.0
@@ -384,3 +400,7 @@ willow[heif]==1.12.0
     #   willow
 xlsxwriter==3.2.9
     # via -r requirements/base.in
+
+# The following packages are considered to be unsafe in a requirements file:
+# pip
+# setuptools

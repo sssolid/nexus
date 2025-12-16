@@ -1,5 +1,7 @@
 services:
   db:
+    env_file:
+      - .env.development
     ports:
       - "5432:5432"
 
@@ -42,6 +44,7 @@ services:
       - .env.development
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.development
+      ENV_FILE: .env.development
       SERVICE_ROLE: flower
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432

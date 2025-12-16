@@ -32,14 +32,25 @@ def reset_2fa_devices(modeladmin, request, queryset):
     )
 
 
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    extra = 0
+    can_delete = False
+    show_change_link = True
+    autocomplete_fields = ("address",)
+
+
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     """Admin interface for User model."""
+
+    inlines = [UserProfileInline]
 
     list_display = [
         "email", "full_name", "user_type", "employee_role",
         "is_active", "email_verified", "is_approved", "is_staff", "created_at"
     ]
+
     list_filter = [
         "user_type", "employee_role", "is_active",
         "email_verified", "is_approved", "is_staff"
@@ -85,34 +96,59 @@ class UserAdmin(BaseUserAdmin):
 class UserProfileAdmin(admin.ModelAdmin):
     """Admin interface for UserProfile model."""
 
+    autocomplete_fields = ("user", "address")
+
     list_display = [
-        "user", "city", "state", "country",
-        "notifications_enabled", "default_export_format"
+        "user",
+        "country",
+        "timezone",
+        "notifications_enabled",
+        "default_export_format",
     ]
+
     list_filter = [
-        "notifications_enabled", "email_notifications",
-        "newsletter_subscription", "country"
+        "country",
+        "timezone",
+        "notifications_enabled",
+        "email_notifications",
+        "newsletter_subscription",
     ]
-    search_fields = ["user__email", "city", "state", "postal_code"]
+
+    search_fields = [
+        "user__email",
+        "user__first_name",
+        "user__last_name",
+    ]
 
     fieldsets = (
-        (_("User"), {"fields": ("user",)}),
+        (_("User"), {
+            "fields": ("user",),
+        }),
+        (_("Locale"), {
+            "fields": ("country", "timezone"),
+        }),
         (_("Address"), {
-            "fields": (
-                "address_line1", "address_line2",
-                "city", "state", "postal_code", "country"
-            )
+            "fields": ("address",),
         }),
         (_("Notifications"), {
             "fields": (
-                "notifications_enabled", "email_notifications",
-                "newsletter_subscription"
-            )
+                "notifications_enabled",
+                "email_notifications",
+                "newsletter_subscription",
+            ),
         }),
-        (_("Preferences"), {"fields": ("items_per_page", "default_export_format")}),
+        (_("Preferences"), {
+            "fields": (
+                "items_per_page",
+                "default_export_format",
+            ),
+        }),
+        (_("Metadata"), {
+            "fields": ("created_at", "updated_at"),
+        }),
     )
 
-    readonly_fields = ["created_at", "updated_at"]
+    readonly_fields = ("created_at", "updated_at")
 
 
 @admin.register(CustomerPricingTier)

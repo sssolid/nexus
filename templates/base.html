@@ -12,108 +12,16 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    <!-- Custom CSS -->
-    <style>
-        :root {
-            --primary-color: #0066cc;
-            --secondary-color: #333333;
-            --accent-color: #ff6600;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-
-        main {
-            flex: 1;
-            padding-top: 20px;
-            padding-bottom: 40px;
-        }
-
-        .navbar {
-            background-color: var(--secondary-color);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-brand {
-            font-weight: 600;
-            color: #ffffff !important;
-            font-size: 1.3rem;
-        }
-
-        .nav-link {
-            color: rgba(255, 255, 255, 0.85) !important;
-            transition: color 0.2s;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            color: #ffffff !important;
-        }
-
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .footer {
-            background-color: var(--secondary-color);
-            color: #ffffff;
-            padding: 40px 0 20px;
-            margin-top: auto;
-        }
-
-        .footer a {
-            color: rgba(255, 255, 255, 0.85);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .footer a:hover {
-            color: #ffffff;
-            text-decoration: underline;
-        }
-
-        .footer h5 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        .card {
-            border: none;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-            transition: box-shadow 0.2s;
-        }
-
-        .card:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-primary:hover {
-            background-color: #0052a3;
-            border-color: #0052a3;
-        }
-
-        .badge {
-            font-weight: 500;
-        }
-    </style>
+    <!-- Theme -->
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
 
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body data-theme="dark">
 <!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark">
+<nav class="navbar navbar-expand-lg app-nav">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">
+        <a class="navbar-brand text-heading" href="/">
             <i class="fas fa-car"></i> Crown Data Portal
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -124,7 +32,7 @@
                 {% get_site_nav as nav_items %}
                 {% for item in nav_items %}
                     <li class="nav-item">
-                        <a class="nav-link{% if item.active %} active{% endif %}" href="{{ item.url }}">
+                        <a class="nav-link{% if item.active %} active{% endif %} text-default" href="{{ item.url }}">
                             {% if item.icon %}<i class="fas fa-{{ item.icon }}"></i> {% endif %}{{ item.title }}
                         </a>
                     </li>
@@ -132,7 +40,7 @@
 
                 {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                        <a class="nav-link dropdown-toggle text-default" href="#" id="userDropdown" role="button"
                            data-bs-toggle="dropdown">
                             <i class="fas fa-user"></i> {{ user.get_full_name|default:user.email }}
                         </a>
@@ -161,18 +69,26 @@
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'two_factor:login' %}">
+                        <a class="nav-link text-default" href="{% url 'two_factor:login' %}">
                             <i class="fas fa-sign-in-alt"></i> Login
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:register' %}">
+                        <a class="nav-link text-default" href="{% url 'accounts:register' %}">
                             <i class="fas fa-user-plus"></i> Register
                         </a>
                     </li>
                 {% endif %}
             </ul>
         </div>
+        <button
+                id="themeToggle"
+                class="btn btn-sm btn-outline-secondary ms-2"
+                aria-label="Toggle theme"
+                title="Toggle theme"
+        >
+            <i id="themeIcon" class="fas fa-moon"></i>
+        </button>
     </div>
 </nav>
 
@@ -194,11 +110,11 @@
 </main>
 
 <!-- Footer -->
-<footer class="footer">
+<footer class="app-footer text-default mt-4">
     <div class="container">
         <div class="row">
             <div class="col-md-4 mb-4">
-                <h5>About Crown Data Portal</h5>
+                <h5 class="text-heading">About Crown Data Portal</h5>
                 <p class="small">
                     A private reference system for authorized Crown Automotive customers and business partners.
                     Access comprehensive automotive parts information and data management tools.
@@ -238,16 +154,16 @@
         <hr class="bg-white opacity-25">
         <div class="row">
             <div class="col-md-8">
-                <p class="small text-muted mb-2">
+                <p class="small text-default mb-2">
                     &copy; {% now "Y" %} Crown Automotive Sales Co., Inc. All rights reserved.
                 </p>
-                <p class="small text-muted mb-0">
+                <p class="small text-default mb-0">
                     Crown Automotive Sales Co., Inc. is not affiliated with FCA US LLC or Stellantis NV.
                     Jeep® is a registered trademark of FCA US LLC.
                 </p>
             </div>
             <div class="col-md-4 text-md-end">
-                <p class="small text-muted mb-0">
+                <p class="small text-info mb-0">
                     <a href="https://crowndataportal.com">crowndataportal.com</a>
                 </p>
             </div>
@@ -260,6 +176,9 @@
 
 <!-- HTMX -->
 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+<!-- Custom JS -->
+<script src="{% static 'scripts/toggle_theme.js' %}"></script>
 
 {% block extra_js %}{% endblock %}
 </body>

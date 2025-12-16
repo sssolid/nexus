@@ -27,9 +27,7 @@ IS_MANAGEMENT_COMMAND = any(
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "0.0.0.0",
+    "*",
 ]
 
 INTERNAL_IPS = [
@@ -100,6 +98,7 @@ CSRF_COOKIE_SECURE = False
 SECURE_BROWSER_XSS_FILTER = False
 SECURE_CONTENT_TYPE_NOSNIFF = False
 
+CONTENT_SECURITY_POLICY["DIRECTIVES"]["frame-ancestors"] = ("'self'",)
 CONTENT_SECURITY_POLICY["DIRECTIVES"]["connect-src"] += ("ws:", "http:")
 CONTENT_SECURITY_POLICY["DIRECTIVES"]["style-src"] += (
     "https://cdn.jsdelivr.net",
@@ -113,6 +112,19 @@ CONTENT_SECURITY_POLICY["DIRECTIVES"]["font-src"] += (
 CONTENT_SECURITY_POLICY["DIRECTIVES"]["script-src"] += (
     "https://cdn.jsdelivr.net",
     "https://unpkg.com",
+)
+CONTENT_SECURITY_POLICY["DIRECTIVES"]["img-src"] += (
+    'self',
+    "data:",
+    "https://crownautomotive.net",
+    "https://mcusercontent.com",
+    "http://www.gravatar.com",
+    "https://www.gravatar.com",
+    # Mailchimp image hosting
+    "https://*.mailchimp.com",
+    "https://*.mailchimpusercontent.com",
+    "https://gallery.mailchimp.com",
+    "https://*.mcusercontent.com",
 )
 
 AXES_ENABLED = False

@@ -139,7 +139,7 @@ class Command(BaseCommand):
                 "is_enabled": True,
                 "sync_interval_minutes": 5,
                 "filemaker_layout": "Master",
-                "filemaker_query": "SELECT AS400_NumberStripped FROM Master",
+                "filemaker_query": '"AS400_NumberStripped" IS NOT NULL',
                 "batch_size": 500,
                 "enable_incremental": False,
             },

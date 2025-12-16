@@ -1,9 +1,13 @@
+pip-tools
+
 # Core Django
 Django
 django-environ
 
 # Serve media in production
 whitenoise
+
+django-countries
 
 # Database
 psycopg2-binary

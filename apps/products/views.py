@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, render
 from .models import Product, ProductCategory, ProductManufacturer
 
 
-def product_list(request):
+def product_search(request):
     """Display product catalog with filtering and search."""
     products = Product.objects.filter(is_active=True).select_related(
         'category', 'manufacturer'
@@ -67,7 +67,7 @@ def product_list(request):
 
     return render(
         request,
-        "products/product_list.html",
+        "products/product_search.html",
         context,
     )
 
@@ -75,7 +75,7 @@ def product_list(request):
 @login_required
 def customer_catalog(request):
     """Customer-specific catalog view."""
-    return product_list(request)
+    return product_search(request)
 
 
 def product_detail(request, slug):

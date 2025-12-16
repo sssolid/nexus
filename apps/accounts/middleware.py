@@ -2,6 +2,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.deprecation import MiddlewareMixin
 from django_otp import user_has_device
+from django.utils import timezone
 
 
 class Enforce2FAMiddleware(MiddlewareMixin):
@@ -71,3 +72,16 @@ class Enforce2FAMiddleware(MiddlewareMixin):
                     return redirect(reverse("two_factor:login"))
 
         return None
+
+
+class UserTimezoneMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.user.is_authenticated and hasattr(request.user, "profile"):
+            timezone.activate(request.user.profile.timezone)
+        else:
+            timezone.deactivate()
+
+        return self.get_response(request)

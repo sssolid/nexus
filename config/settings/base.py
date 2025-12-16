@@ -116,8 +116,12 @@ INSTALLED_APPS = [
     "modelcluster",
     "taggit",
 
+    # Countries
+    "django_countries",
+
     # Custom apps
     "apps.core",
+    "apps.common",
     "apps.cms",
     "apps.accounts.apps.AccountsConfig",
     "apps.products",
@@ -149,6 +153,9 @@ MIDDLEWARE = [
 
     # Authentication (ONCE)
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+
+    # Timezone Activation
+    "apps.accounts.middleware.UserTimezoneMiddleware",
 
     # OTP must follow auth
     "django_otp.middleware.OTPMiddleware",
@@ -301,6 +308,9 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = env("STATIC_ROOT", default=BASE_DIR / "staticfiles")
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = env("MEDIA_ROOT", default=BASE_DIR / "media")
@@ -415,6 +425,26 @@ FILEMAKER_USERNAME=env("FILEMAKER_USERNAME",default="admin")
 FILEMAKER_PASSWORD=env("FILEMAKER_PASSWORD",default="")
 FILEMAKER_SYNC_ENABLED=env("FILEMAKER_SYNC_ENABLED",default=False,cast=bool)
 FILEMAKER_SYNC_INTERVAL=env("FILEMAKER_SYNC_INTERVAL",default=3600,cast=int)
+
+# ============================================================
+# Mailchimp
+# ============================================================
+MAILCHIMP_API_KEY=env("MAILCHIMP_API_KEY",default="")
+MAILCHIMP_SERVER_PREFIX=env("MAILCHIMP_SERVER_PREFIX",default="us6")
+
+# ============================================================
+# Autocare
+# ============================================================
+
+AUTOCARE_OAUTH_TOKEN_URL = env("AUTOCARE_OAUTH_TOKEN_URL", default="")
+AUTOCARE_CLIENT_ID = env("AUTOCARE_CLIENT_ID", default="")
+AUTOCARE_CLIENT_SECRET = env("AUTOCARE_CLIENT_SECRET", default="")
+AUTOCARE_USERNAME = env("AUTOCARE_USERNAME", default="")
+AUTOCARE_PASSWORD = env("AUTOCARE_PASSWORD", default="")
+AUTOCARE_SCOPE = env("AUTOCARE_SCOPE", default="")
+
+VCDB_API_BASE = env("VCDB_API_BASE")
+VCDB_SWAGGER_URL = env("VCDB_SWAGGER_URL")
 
 # ============================================================
 # Logging (baseline)

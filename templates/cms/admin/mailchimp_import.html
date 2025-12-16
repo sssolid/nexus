@@ -1,0 +1,38 @@
+{% extends "wagtailadmin/base.html" %}
+
+{% block content %}
+  <h1>Import Mailchimp Campaign</h1>
+  <p>Parent: <strong>{{ parent.title }}</strong></p>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Subject</th>
+                <th>Sent</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for campaign in campaigns %}
+                <tr>
+                    <td>
+                        <input type="checkbox"
+                               name="campaign_ids"
+                               value="{{ campaign.id }}">
+                    </td>
+                    <td>{{ campaign.settings.subject_line }}</td>
+                    <td>{{ campaign.send_time|date:"Y-m-d" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button class="btn btn-primary">
+        Import selected newsletters
+    </button>
+</form>
+
+{% endblock %}

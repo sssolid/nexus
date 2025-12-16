@@ -13,8 +13,10 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.models import Page
 from wagtail.search import index
+from wagtail.admin.forms import WagtailAdminPageForm
 
-from apps.products.models import Product, ProductCategory
+from apps.products.models import Product, ProductCategory, ProductManufacturer
+from django.core.exceptions import ValidationError
 
 
 class HomePage(Page):
@@ -88,7 +90,8 @@ class HomePage(Page):
 
 class ProductIndexPage(Page):
     """
-    Product catalog index page integrated with Wagtail.
+    Products landing / overview page.
+    No product querying here.
     """
 
     intro = RichTextField(blank=True)
@@ -97,65 +100,10 @@ class ProductIndexPage(Page):
         FieldPanel("intro"),
     ]
 
-    subpage_types = []  # No child pages
-
-    def get_context(self, request):
-        """Get product listings with filtering."""
-        context = super().get_context(request)
-
-        # Get products with filters
-        products = (
-            Product.objects.filter(is_active=True)
-            .select_related("category", "manufacturer")
-            .prefetch_related("images")
-        )
-
-        # Search
-        search = request.GET.get("search")
-        if search:
-            products = products.filter(
-                models.Q(part_number__icontains=search)
-                | models.Q(manufacturer_part_number__icontains=search)
-                | models.Q(name__icontains=search)
-                | models.Q(description__icontains=search)
-            )
-
-        # Filter by category
-        category_id = request.GET.get("category")
-        if category_id:
-            products = products.filter(category_id=category_id)
-
-        # Filter by manufacturer
-        manufacturer_id = request.GET.get("manufacturer")
-        if manufacturer_id:
-            products = products.filter(manufacturer_id=manufacturer_id)
-
-        # Filter by status
-        status = request.GET.get("status")
-        if status:
-            products = products.filter(status=status)
-
-        # Pagination
-        paginator = Paginator(products, 50)
-        page = request.GET.get("page")
-
-        try:
-            products = paginator.page(page)
-        except PageNotAnInteger:
-            products = paginator.page(1)
-        except EmptyPage:
-            products = paginator.page(paginator.num_pages)
-
-        context["products"] = products
-        context["categories"] = ProductCategory.objects.filter(is_active=True)
-        context["manufacturers"] = products.model.objects.values_list(
-            "manufacturer", flat=True
-        ).distinct()
-
-        return context
+    subpage_types = []
 
     class Meta:
-        verbose_name = "Product Index Page"
+        verbose_name = "Product Index"
 
 
 class CustomerDashboardPage(Page):
@@ -277,7 +225,10 @@ class NewsletterIndexPage(Page):
         FieldPanel("intro"),
     ]
 
-    subpage_types = ["cms.NewsletterPage"]
+    subpage_types = [
+        "cms.AuthoredNewsletterPage",
+        "cms.ArchivedNewsletterPage",
+    ]
 
     def get_context(self, request):
         """Get newsletter listings."""
@@ -285,8 +236,9 @@ class NewsletterIndexPage(Page):
 
         # Get published newsletters
         newsletters = (
-            NewsletterPage.objects.live()
-            .descendant_of(self)
+            Page.objects.child_of(self)
+            .live()
+            .specific()
             .order_by("-first_published_at")
         )
 
@@ -308,7 +260,7 @@ class NewsletterIndexPage(Page):
         verbose_name = "Newsletter Index"
 
 
-class NewsletterPage(Page):
+class AuthoredNewsletterPage(Page):
     """
     Individual newsletter page.
     """
@@ -341,3 +293,27 @@ class NewsletterPage(Page):
     class Meta:
         verbose_name = "Newsletter"
         ordering = ["-date"]
+
+class ArchivedNewsletterForm(WagtailAdminPageForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields.values():
+            field.disabled = True
+
+class ArchivedNewsletterPage(Page):
+    send_date = models.DateTimeField()
+    subject = models.CharField(max_length=255)
+    mailchimp_campaign_id = models.CharField(max_length=64, unique=True)
+    archive_url = models.URLField(blank=True)
+    html_content = models.TextField(editable=False)
+    base_form_class = ArchivedNewsletterForm
+
+    content_panels = Page.content_panels + [
+        FieldPanel("send_date"),
+        FieldPanel("subject"),
+        FieldPanel("archive_url"),
+    ]
+
+    parent_page_types = ["cms.NewsletterIndexPage"]
+    subpage_types = []

@@ -8,6 +8,9 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django_countries.fields import CountryField
+from zoneinfo import available_timezones
+from apps.common.models import Address
 
 
 class UserManager(BaseUserManager):
@@ -198,14 +201,28 @@ class UserProfile(models.Model):
         on_delete=models.CASCADE,
         related_name='profile'
     )
-    
-    # Address information
-    address_line1 = models.CharField(max_length=255, blank=True)
-    address_line2 = models.CharField(max_length=255, blank=True)
-    city = models.CharField(max_length=100, blank=True)
-    state = models.CharField(max_length=50, blank=True)
-    postal_code = models.CharField(max_length=20, blank=True)
-    country = models.CharField(max_length=100, default='USA')
+
+    # Location / locale
+    country = CountryField(
+        blank=True,
+        null=True,
+        help_text=_("Primary country for the user")
+    )
+
+    timezone = models.CharField(
+        max_length=50,
+        choices=[(tz, tz) for tz in sorted(available_timezones())],
+        default="UTC",
+    )
+
+    # Address (normalized)
+    address = models.ForeignKey(
+        Address,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="user_profiles"
+    )
     
     # Preferences
     notifications_enabled = models.BooleanField(default=True)

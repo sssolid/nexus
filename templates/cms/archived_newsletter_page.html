@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    {{ page.subject }} – Crown Data Portal
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        window.addEventListener("message", function (event) {
+            if (event.data && event.data.type === "resize-iframe") {
+                const iframe = document.querySelector(".newsletter-iframe");
+                if (iframe) {
+                    iframe.style.height = event.data.height + "px";
+                }
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+
+        <!-- Page Header -->
+        <div class="app-surface p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                <div>
+                    <h1 class="mb-1">{{ page.subject }}</h1>
+                    <p class="text-muted mb-0">
+                        Sent {{ page.send_date|date:"F j, Y" }}
+                    </p>
+                </div>
+
+                {% if page.archive_url %}
+                    <a href="{{ page.archive_url }}"
+                       class="btn btn-outline-primary btn-sm"
+                       target="_blank"
+                       rel="noopener">
+                        View original email
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Archived Newsletter -->
+        <div class="app-surface p-0 overflow-hidden">
+
+            <iframe
+                    class="newsletter-iframe"
+                    srcdoc="
+        <script>
+            window.addEventListener('load', function () {
+                parent.postMessage({
+                    type: 'resize-iframe',
+                    height: document.body.scrollHeight
+                }, '*');
+            });
+        </script>
+        {{ page.html_content|escape }}
+    "
+                    sandbox="allow-scripts"
+            ></iframe>
+
+
+        </div>
+
+    </div>
+{% endblock %}

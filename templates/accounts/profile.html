@@ -6,6 +6,7 @@
 {% block content %}
     <div class="container">
         <div class="row">
+
             <div class="col-md-3">
                 <!-- Profile Sidebar -->
                 <div class="card">
@@ -55,16 +56,19 @@
             </div>
 
             <div class="col-md-9">
+
                 <!-- Profile Form -->
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0"><i class="fas fa-user-edit"></i> Profile Information</h5>
                     </div>
+
                     <div class="card-body">
                         <form method="post">
                             {% csrf_token %}
 
                             <h6 class="border-bottom pb-2 mb-3">Personal Information</h6>
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -99,15 +103,49 @@
                                 </div>
                             {% endif %}
 
+                            <!-- Profile Settings (your ModelForm fields) -->
                             <h6 class="border-bottom pb-2 mb-3 mt-4">Profile Settings</h6>
 
                             {{ form|crispy }}
+
+                            <!-- Address (separate form) -->
+                            {% if address_form %}
+                                <h6 class="border-bottom pb-2 mb-3 mt-4">Address</h6>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {{ address_form.address_line1|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-12">
+                                        {{ address_form.address_line2|as_crispy_field }}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        {{ address_form.city|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{ address_form.state_province|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{ address_form.postal_code|as_crispy_field }}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {{ address_form.country|as_crispy_field }}
+                                    </div>
+                                </div>
+                            {% endif %}
 
                             <div class="d-grid gap-2 mt-4">
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="fas fa-save"></i> Save Changes
                                 </button>
                             </div>
+
                         </form>
                     </div>
                 </div>
@@ -132,12 +170,12 @@
                             {% if user.email_verified and user.is_approved %}
                                 {% if user.otp_device %}
                                     <span class="badge bg-success">
-                        <i class="fas fa-check-circle"></i> Enabled
-                    </span>
+                                    <i class="fas fa-check-circle"></i> Enabled
+                                </span>
                                 {% else %}
-                                    <span class="badge bg-warning text-dark">
-                        <i class="fas fa-exclamation-triangle"></i> Not Enabled
-                    </span>
+                                    <span class="badge bg-warning text-default">
+                                    <i class="fas fa-exclamation-triangle"></i> Not Enabled
+                                </span>
                                 {% endif %}
                             {% endif %}
                         </div>
@@ -160,7 +198,6 @@
                     </div>
                 </div>
 
-
                 <!-- Account Statistics -->
                 {% if user.is_customer %}
                     <div class="card mt-3">
@@ -174,8 +211,9 @@
                                     <p class="text-muted">Total Exports</p>
                                 </div>
                                 <div class="col-md-4">
-                                    <h3 class="text-success">CHECK
-                                        TEMPLATE{# {{ user.validation_jobs.filter.status='COMPLETED'.count }} #}</h3>
+                                    <h3 class="text-success">
+                                        CHECK TEMPLATE{# {{ user.validation_jobs.filter.status='COMPLETED'.count }} #}
+                                    </h3>
                                     <p class="text-muted">Validations</p>
                                 </div>
                                 <div class="col-md-4">
@@ -186,6 +224,7 @@
                         </div>
                     </div>
                 {% endif %}
+
             </div>
         </div>
     </div>
