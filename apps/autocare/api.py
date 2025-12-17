@@ -24,7 +24,7 @@ class AutocareAPIClient:
                 "Authorization": f"Bearer {token}",
                 "Accept": "application/json",
             },
-            timeout=(5, 60),
+            timeout=(5, 90),
         )
         response.raise_for_status()
         return response

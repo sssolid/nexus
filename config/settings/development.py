@@ -35,9 +35,9 @@ INTERNAL_IPS = [
     "localhost",
 ]
 
-print("=" * 50)
-print("DEVELOPMENT MODE ACTIVE")
-print("=" * 50)
+print("#" * 50)
+print("# DEVELOPMENT MODE ACTIVE")
+print("#" * 50)
 
 # ============================================================
 # Development-only apps (ALWAYS INSTALLED)
@@ -66,6 +66,23 @@ if not IS_MANAGEMENT_COMMAND:
     MIDDLEWARE.append(
         "silk.middleware.SilkyMiddleware",
     )
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env("DB_NAME", default="nexus"),
+        "USER": env("DB_USER", default="postgres"),
+        "PASSWORD": env("DB_PASSWORD", default="postgres"),
+        "HOST": env("DB_HOST", default="localhost"),
+        "PORT": env("DB_PORT", default="5432"),
+        "ATOMIC_REQUESTS": True,
+        "CONN_MAX_AGE": 600,
+        "OPTIONS": {
+            "connect_timeout": 10,
+            "options": "-c search_path=public,staging",
+        },
+    }
+}
 
 # ============================================================
 # Debug Toolbar

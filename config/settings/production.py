@@ -13,9 +13,9 @@ from sentry_sdk.integrations.redis import RedisIntegration
 
 from .base import *  # noqa
 
-print("=" * 50)
-print("PRODUCTION MODE ACTIVE")
-print("=" * 50)
+print("#" * 50)
+print("# PRODUCTION MODE ACTIVE")
+print("#" * 50)
 
 # ============================================================
 # Core

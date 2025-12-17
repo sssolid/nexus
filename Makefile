@@ -92,6 +92,10 @@ define manage
 	$(call exec,$(WEB),python manage.py $(1))
 endef
 
+define manage-local
+	python manage.py $(1)
+endef
+
 # ============================================================
 # HELP — LEVEL 1 (CATEGORIES)
 # ============================================================
@@ -288,10 +292,36 @@ help-migrate:
 	@echo "migrate — Apply migrations"
 
 makemigrations:
-	$(call manage,makemigrations)
+	$(call manage-local,makemigrations)
 
 help-makemigrations:
 	@echo "makemigrations — Create migrations"
+
+makemigrations-web:
+	$(call manage,makemigrations)
+
+help-makemigrations-web:
+	@echo "makemigrations — Create migrations"
+
+.PHONY: migrations-nuke
+migrations-nuke:
+	@if [[ "$(IS_PROD)" == "1" ]]; then \
+		echo "ERROR: Refusing to delete migrations in production."; \
+		exit 1; \
+	fi
+	$(call confirm,This will DELETE ALL Django migration files (except __init__.py) in DEV. Continue?)
+	echo "Deleting migration files..."
+	find . \
+		-path "./.venv" -prune -o \
+		-path "./venv" -prune -o \
+		-path "*/migrations/*.py" \
+		! -name "__init__.py" \
+		-type f \
+		-exec rm -f {} +
+	echo "Migration files deleted."
+
+help-migrations-nuke:
+	@echo "migrations-nuke — Delete ALL migration files (DEV ONLY, destructive)"
 
 superuser:
 	$(call manage,createsuperuser)
