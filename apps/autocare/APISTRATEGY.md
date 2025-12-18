@@ -1,80 +1,80 @@
 REFERENCE TABLES
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Year --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Make --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Model --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SubModel --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Region --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleTypeGroup --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Class --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Abbreviation --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/PublicationStage --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Mfr --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/MfrBodyCode --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BodyType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BodyNumDoors --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BedType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BedLength --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/WheelBase --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Transmission --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionMfrCode --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/ElecControlled --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/PowerOutput --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Year --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Make --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Model --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SubModel --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Region --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleTypeGroup --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Class --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Abbreviation --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/PublicationStage --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Mfr --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/MfrBodyCode --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BodyType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BodyNumDoors --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BedType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BedLength --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/WheelBase --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Transmission --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionMfrCode --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/ElecControlled --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/PowerOutput --asof 2025-12-18 --pagesize 1000
 
 ATTRIBUTE TABLES
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/DriveType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionControlType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionNumSpeeds --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SteeringType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SteeringSystem --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BrakeType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BrakeSystem --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BrakeABS --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SpringType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Valves --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Aspiration --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/CylinderHeadType --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/DriveType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionControlType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionNumSpeeds --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SteeringType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SteeringSystem --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BrakeType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BrakeSystem --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BrakeABS --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SpringType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Valves --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Aspiration --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/CylinderHeadType --asof 2025-12-18 --pagesize 1000
 
 CONFIGURATION TABLES
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineBlock --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineBoreStroke --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineBase --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineDesignation --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineVersion --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineVin --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineConfig --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionBase --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BrakeConfig --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SteeringConfig --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SpringTypeConfig --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BodyStyleConfig --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BedConfig --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelDeliveryConfig --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelDeliveryType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelDeliverySubType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelSystemControlType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelSystemDesign --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/IgnitionSystemType --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineBlock --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineBoreStroke --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineBase --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineDesignation --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineVersion --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineVin --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionBase --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BrakeConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SteeringConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SpringTypeConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BodyStyleConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BedConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelDeliveryConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelDeliveryType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelDeliverySubType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelSystemControlType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelSystemDesign --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/IgnitionSystemType --asof 2025-12-18 --pagesize 1000
 
 CORE VEHICLES (HIGH VOLUME)
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BaseVehicle --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Vehicle --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BaseVehicle --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Vehicle --asof 2025-12-18 --pagesize 1000
 
 FITMENT TABLES (VERY LARGE)
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToEngineConfig --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToTransmission --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToBodyConfig --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToDriveType --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToBedConfig --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToWheelBase --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToClass --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToBrakeConfig --pagesize 1000
-docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToBodyStyleConfig --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToSpringTypeConfig --pagesize 1000
-- (NEED TO RESUME) docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToSteeringConfig --pagesize 1000
-docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToMfrBodyCode --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToEngineConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToTransmission --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToBodyConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToDriveType --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToBedConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToWheelBase --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToClass --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToBrakeConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToBodyStyleConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToSpringTypeConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToSteeringConfig --asof 2025-12-18 --pagesize 1000
+- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToMfrBodyCode --asof 2025-12-18 --pagesize 1000
 
 Skip /vcdb/equipment and /vcdb/VCdbChanges
 

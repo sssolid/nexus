@@ -1,5 +1,6 @@
 # # Core / base models
 from .base import *
+from .vcdb_ingest_state import VCDBIngestState
 
 # VCDB models
 from .vcdb.attachment import *

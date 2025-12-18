@@ -1,269 +1,207 @@
+from __future__ import annotations
+
 import json
-from datetime import datetime
+import logging
 from collections import defaultdict
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Type
 
 from django.apps import apps
 from django.core.management.base import BaseCommand
-from django.db import transaction
+from django.db import IntegrityError, transaction
+from django.db import models
 
-from apps.autocare.models import AutocareRawRecord
-import logging
-from pathlib import Path
+from apps.autocare.models.base import AutocareRawRecord
+from apps.autocare.vcdb.vcdb_plan import VCDB_INGEST_PLAN, VCDBPlanItem
+from apps.autocare.vcdb.deps import topo_sort_models
 
-LOG_PATH = Path("/var/log/django/autocare_vcdb_ingest.log")
+
+LOG_PATH = Path("/tmp/autocare_vcdb_ingest_errors.log")
 LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 logger = logging.getLogger("autocare.vcdb.ingest")
 logger.setLevel(logging.ERROR)
-
-handler = logging.FileHandler(LOG_PATH)
-handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
-logger.addHandler(handler)
-
-
-# ============================================================
-# Canonical VCDB ingestion plan (ORDER MATTERS)
-# ============================================================
-
-VCDB_INGEST_PLAN = [
-    # ============================================================
-    # Core reference tables (no dependencies)
-    # ============================================================
-    ("/vcdb/Year", "Year"),
-    ("/vcdb/Make", "Make"),
-    ("/vcdb/Region", "Region"),
-    ("/vcdb/VehicleTypeGroup", "VehicleTypeGroup"),
-    ("/vcdb/VehicleType", "VehicleType"),
-    ("/vcdb/Class", "VehicleClass"),
-    ("/vcdb/Model", "VehicleModel"),
-    ("/vcdb/SubModel", "SubModel"),
-
-    # ============================================================
-    # Secondary reference tables
-    # ============================================================
-    ("/vcdb/Abbreviation", "Abbreviation"),
-    ("/vcdb/Mfr", "Manufacturer"),
-    ("/vcdb/MfrBodyCode", "ManufacturerBodyCode"),
-    ("/vcdb/PublicationStage", "PublicationStage"),
-
-    # ============================================================
-    # Attribute tables
-    # ============================================================
-    ("/vcdb/DriveType", "DriveType"),
-    ("/vcdb/FuelType", "FuelType"),
-    ("/vcdb/TransmissionType", "TransmissionType"),
-    ("/vcdb/TransmissionControlType", "TransmissionControlType"),
-    ("/vcdb/TransmissionNumSpeeds", "TransmissionNumSpeeds"),
-    ("/vcdb/SteeringType", "SteeringType"),
-    ("/vcdb/SteeringSystem", "SteeringSystem"),
-    ("/vcdb/BrakeType", "BrakeType"),
-    ("/vcdb/BrakeSystem", "BrakeSystem"),
-    ("/vcdb/BrakeABS", "BrakeABS"),
-    ("/vcdb/SpringType", "SpringType"),
-    ("/vcdb/Valves", "Valves"),
-    ("/vcdb/Aspiration", "Aspiration"),
-    ("/vcdb/CylinderHeadType", "CylinderHeadType"),
-    ("/vcdb/BodyType", "BodyType"),
-    ("/vcdb/BodyNumDoors", "BodyNumDoors"),
-    ("/vcdb/BedType", "BedType"),
-    ("/vcdb/BedLength", "BedLength"),
-    ("/vcdb/WheelBase", "WheelBase"),
-    ("/vcdb/PowerOutput", "PowerOutput"),
-    ("/vcdb/IgnitionSystemType", "IgnitionSystemType"),
-    ("/vcdb/FuelDeliveryType", "FuelDeliveryType"),
-    ("/vcdb/FuelDeliverySubType", "FuelDeliverySubType"),
-    ("/vcdb/FuelDeliveryConfig", "FuelDeliveryConfig"),
-    ("/vcdb/FuelSystemControlType", "FuelSystemControlType"),
-    ("/vcdb/FuelSystemDesign", "FuelSystemDesign"),
-    ("/vcdb/ElecControlled", "ElecControlled"),
-
-    # ============================================================
-    # Engine / drivetrain configuration tables
-    # ============================================================
-    ("/vcdb/EngineBlock", "EngineBlock"),
-    ("/vcdb/EngineBoreStroke", "EngineBoreStroke"),
-    ("/vcdb/EngineBase", "EngineBase"),
-    ("/vcdb/EngineDesignation", "EngineDesignation"),
-    ("/vcdb/EngineVersion", "EngineVersion"),
-    ("/vcdb/EngineVIN", "EngineVIN"),
-    ("/vcdb/EngineConfig", "EngineConfig"),
-    ("/vcdb/TransmissionBase", "TransmissionBase"),
-    ("/vcdb/Transmission", "Transmission"),
-    ("/vcdb/TransmissionMfrCode", "TransmissionManufacturerCode"),
-
-    # ============================================================
-    # Body / chassis configuration tables
-    # ============================================================
-    ("/vcdb/BrakeConfig", "BrakeConfig"),
-    ("/vcdb/SteeringConfig", "SteeringConfig"),
-    ("/vcdb/SpringTypeConfig", "SpringTypeConfig"),
-    ("/vcdb/BodyStyleConfig", "BodyStyleConfig"),
-    ("/vcdb/BedConfig", "BedConfig"),
-
-    # ============================================================
-    # Core vehicle entities (high volume)
-    # ============================================================
-    ("/vcdb/BaseVehicle", "BaseVehicle"),
-    ("/vcdb/Vehicle", "Vehicle"),
-
-    # ============================================================
-    # Vehicle relationship / fitment tables (very large)
-    # ============================================================
-    ("/vcdb/VehicleToEngineConfig", "VehicleToEngineConfig"),
-    ("/vcdb/VehicleToTransmission", "VehicleToTransmission"),
-    ("/vcdb/VehicleToBodyConfig", "VehicleToBodyConfig"),
-    ("/vcdb/VehicleToBodyStyleConfig", "VehicleToBodyStyleConfig"),
-    ("/vcdb/VehicleToBrakeConfig", "VehicleToBrakeConfig"),
-    ("/vcdb/VehicleToSteeringConfig", "VehicleToSteeringConfig"),
-    ("/vcdb/VehicleToSpringTypeConfig", "VehicleToSpringTypeConfig"),
-    ("/vcdb/VehicleToDriveType", "VehicleToDriveType"),
-    ("/vcdb/VehicleToBedConfig", "VehicleToBedConfig"),
-    ("/vcdb/VehicleToWheelBase", "VehicleToWheelBase"),
-    ("/vcdb/VehicleToClass", "VehicleToClass"),
-    ("/vcdb/VehicleToMfrBodyCode", "VehicleToManufacturerBodyCode"),
-
-    # ============================================================
-    # Change tracking
-    # ============================================================
-    ("/vcdb/VCdbChanges", "VCdbChanges"),
-]
+_handler = logging.FileHandler(LOG_PATH)
+_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+logger.addHandler(_handler)
 
 
-def resolve_vcdb_model(endpoint: str):
-    for prefix, model_name in VCDB_INGEST_PLAN:
-        if endpoint == model_name:
-            model_name = apps.get_model("autocare", model_name)
-            return model_name
-    return None
+def resolve_model(app_label: str, model_name: str) -> Optional[Type[models.Model]]:
+    try:
+        return apps.get_model(app_label, model_name)
+    except Exception:
+        return None
 
 
-# ============================================================
-# Command
-# ============================================================
+def is_required_field(field: models.Field) -> bool:
+    if getattr(field, "null", False):
+        return False
+    if field.has_default():
+        return False
+    # Auto-created implicit PK is not required from payload
+    if getattr(field, "primary_key", False) and field.get_internal_type() in ("AutoField", "BigAutoField"):
+        return False
+    return True
+
+
+def normalize_value(v: Any) -> Any:
+    if v == "null":
+        return None
+    if isinstance(v, str) and "T" in v:
+        try:
+            return datetime.fromisoformat(v)
+        except ValueError:
+            return v
+    return v
+
+
+def build_column_map(model: Type[models.Model]) -> Dict[str, str]:
+    """
+    db_column -> django_attr
+    For FKs: map to <field_name>_id so you can assign raw integer IDs.
+    """
+    m: Dict[str, str] = {}
+    for field in model._meta.fields:
+        db_col = getattr(field, "db_column", None)
+        if not db_col:
+            continue
+        if field.is_relation and getattr(field, "many_to_one", False):
+            m[db_col] = f"{field.name}_id"
+        else:
+            m[db_col] = field.name
+    return m
+
+
+def required_db_columns(model: Type[models.Model]) -> List[str]:
+    cols = []
+    for field in model._meta.fields:
+        db_col = getattr(field, "db_column", None)
+        if not db_col:
+            continue
+        if is_required_field(field):
+            cols.append(db_col)
+    return cols
+
 
 class Command(BaseCommand):
-    help = "Ingest VCDB API payloads into canonical VCDB tables in dependency order."
+    help = "Ingest VCDB raw payloads into canonical VCDB tables, FK-safe order, with hard error logging."
 
-    def handle(self, *args, **options):
-        # Group logs by endpoint, ordered chronologically
-        logs_by_endpoint = defaultdict(list)
+    def add_arguments(self, parser):
+        parser.add_argument("--app-label", default="autocare")
+        parser.add_argument("--db", default="vcdb")
+        parser.add_argument("--since", default=None)
+        parser.add_argument("--asof", default=None)
+        parser.add_argument("--endpoint", default=None, help="Only ingest one endpoint, e.g. /vcdb/Vehicle")
+        parser.add_argument("--batch-size", type=int, default=5000)
+        parser.add_argument("--stop-on-error", action="store_true", default=True)
 
+        parser.add_argument(
+            "--order",
+            choices=["explicit", "auto_fk"],
+            default="auto_fk",
+            help="explicit = VCDB_INGEST_PLAN order; auto_fk = topological FK order (recommended).",
+        )
+
+    def handle(self, *args, **opts):
+        app_label = opts["app_label"]
+
+        # Build endpoint->model mapping from single source of truth
+        plan_items = [p for p in VCDB_INGEST_PLAN if (opts["endpoint"] is None or p.endpoint == opts["endpoint"])]
+
+        # Filter plan to only models that actually exist (generator might be incomplete)
+        existing: List[VCDBPlanItem] = []
+        for p in plan_items:
+            if resolve_model(app_label, p.model) is None:
+                self.stderr.write(f"⚠ Model missing for {p.endpoint}: {p.model} (skipping)")
+                continue
+            existing.append(p)
+
+        if not existing:
+            self.stdout.write("No ingestable items found.")
+            return
+
+        # Determine ingest order
+        if opts["order"] == "explicit":
+            ordered = existing
+        else:
+            # Auto-FK order across the subset present
+            model_names = [p.model for p in existing]
+            sorted_models = topo_sort_models(app_label, model_names)
+            index = {m: i for i, m in enumerate(sorted_models)}
+            ordered = sorted(existing, key=lambda p: index[p.model])
+
+        # Group raw logs by endpoint (chronological)
         qs = (
             AutocareRawRecord.objects
+            .filter(source_db=opts["db"])
             .filter(record_count__gt=0)
             .order_by("fetched_at", "id")
         )
+        if opts["since"] is not None:
+            qs = qs.filter(since_date=opts["since"])
+        if opts["asof"] is not None:
+            qs = qs.filter(as_of_date=opts["asof"])
 
+        logs_by_endpoint = defaultdict(list)
         for log in qs:
             logs_by_endpoint[log.endpoint].append(log)
 
-        # Ingest by canonical order
-        for endpoint, model_name in VCDB_INGEST_PLAN:
-            model = resolve_vcdb_model(model_name)
+        # Execute ingest
+        for item in ordered:
+            model = resolve_model(app_label, item.model)
             if model is None:
-                self.stderr.write(f"⚠ No model found for {model_name} (endpoint {endpoint})")
                 continue
 
-            logs = logs_by_endpoint.get(endpoint, [])
+            logs = logs_by_endpoint.get(item.endpoint, [])
             if not logs:
+                self.stdout.write(f"{item.endpoint}: no raw batches to ingest")
                 continue
 
-            self.stdout.write(f"▶ Ingesting {endpoint} → {model_name} ({len(logs)} batches)")
+            self.stdout.write(f"▶ {item.endpoint} -> {item.model} ({len(logs)} raw batches)")
 
             for log in logs:
-                self.ingest_log(model, log)
+                try:
+                    self.ingest_one_log(model, log, batch_size=opts["batch_size"])
+                except Exception as exc:
+                    self.stderr.write(f"✖ ERROR at endpoint={item.endpoint} log_id={log.id}: {exc}")
+                    if opts["stop_on_error"]:
+                        self.stderr.write(f"Error details logged to {LOG_PATH}")
+                        raise
 
-    @staticmethod
-    def get_required_db_columns(model):
-        """
-        Return db_column names that are NOT NULL and have no default.
-        """
-        required = set()
-        for field in model._meta.fields:
-            if field.null:
-                continue
-            if field.primary_key:
-                continue
-            if field.has_default():
-                continue
-            if field.db_column:
-                required.add(field.db_column)
-        return required
+        self.stdout.write("✔ VCDB canonical ingest complete.")
 
-    @staticmethod
-    def is_required_field(field):
-        """
-        A field is required if:
-        - It is NOT nullable
-        - It has NO default
-        - AND it is NOT an auto-generated PK
-        """
-        if field.null:
-            return False
-
-        if field.has_default():
-            return False
-
-        # AutoField / BigAutoField are generated by Django → not required
-        if field.primary_key and field.get_internal_type() in ("AutoField", "BigAutoField"):
-            return False
-
-        return True
-
-    def ingest_log(self, model, log):
+    def ingest_one_log(self, model: Type[models.Model], log: AutocareRawRecord, batch_size: int) -> None:
         payload = log.payload
         if isinstance(payload, str):
             payload = json.loads(payload)
 
         if not isinstance(payload, list):
-            raise RuntimeError(
-                f"Payload is not a list (log_id={log.id}, endpoint={log.endpoint})"
-            )
+            raise RuntimeError(f"Payload is not a list (log_id={log.id}, endpoint={log.endpoint})")
 
-        # Build db_column → django attr map
-        column_map = {}
-        for field in model._meta.fields:
-            if not field.db_column:
-                continue
-            if field.is_relation and field.many_to_one:
-                column_map[field.db_column] = f"{field.name}_id"
-            else:
-                column_map[field.db_column] = field.name
+        col_map = build_column_map(model)
+        required = set(required_db_columns(model))
 
-        required_columns = {
-            field.db_column
-            for field in model._meta.fields
-            if field.db_column and self.is_required_field(field)
-        }
-
-        instances = []
+        # Case-insensitive key access (Autocare casing can vary)
+        instances: List[models.Model] = []
 
         for idx, row in enumerate(payload):
-            data = {}
-            missing = []
+            if not isinstance(row, dict):
+                continue
 
-            # Normalize payload keys for case-insensitive matching
-            normalized_row = {
-                k.lower(): v
-                for k, v in row.items()
-            }
+            normalized_row = {str(k).lower(): v for k, v in row.items()}
 
-            for db_col, attr in column_map.items():
-                value = normalized_row.get(db_col.lower())
+            data: Dict[str, Any] = {}
+            missing: List[str] = []
 
-                if value == "null":
-                    value = None
+            for db_col, attr in col_map.items():
+                v = normalized_row.get(db_col.lower())
+                v = normalize_value(v)
 
-                if value is None and db_col in required_columns:
+                if v is None and db_col in required:
                     missing.append(db_col)
 
-                if isinstance(value, str) and "T" in value:
-                    try:
-                        value = datetime.fromisoformat(value)
-                    except ValueError:
-                        pass
-
-                data[attr] = value
+                data[attr] = v
 
             if missing:
                 error_payload = {
@@ -277,13 +215,11 @@ class Command(BaseCommand):
                     "raw_row": row,
                     "mapped_data": data,
                 }
-
                 logger.error(json.dumps(error_payload, default=str))
-
                 raise RuntimeError(
-                    f"Invalid VCDB payload detected. "
-                    f"See log file for details. "
-                    f"(endpoint={log.endpoint}, log_id={log.id}, row={idx})"
+                    f"Invalid VCDB payload: missing required columns {missing} "
+                    f"(endpoint={log.endpoint}, log_id={log.id}, row={idx}). "
+                    f"See {LOG_PATH}"
                 )
 
             instances.append(model(**data))
@@ -291,12 +227,23 @@ class Command(BaseCommand):
         if not instances:
             return
 
-        with transaction.atomic():
-            model.objects.bulk_create(instances, ignore_conflicts=True)
+        # Bulk insert in chunks, log integrity errors with context
+        try:
+            with transaction.atomic():
+                for i in range(0, len(instances), batch_size):
+                    model.objects.bulk_create(
+                        instances[i:i + batch_size],
+                        ignore_conflicts=True,
+                    )
+        except IntegrityError as exc:
+            logger.error(json.dumps({
+                "error": "INTEGRITY_ERROR",
+                "model": model.__name__,
+                "db_table": model._meta.db_table,
+                "endpoint": log.endpoint,
+                "log_id": log.id,
+                "exception": str(exc),
+            }, default=str))
+            raise
 
-        self.stdout.write(
-            f"✔ {model.__name__}: inserted {len(instances)} rows "
-            f"(log {log.id})"
-        )
-
-
+        self.stdout.write(f"  ✔ {model.__name__}: inserted {len(instances)} rows (log {log.id})")
