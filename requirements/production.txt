@@ -33,9 +33,9 @@ beautifulsoup4==4.14.3
     #   wagtail
 billiard==4.2.4
     # via celery
-boto3==1.42.9
+boto3==1.42.16
     # via -r requirements/production.in
-botocore==1.42.9
+botocore==1.42.16
     # via
     #   boto3
     #   s3transfer
@@ -59,15 +59,21 @@ cffi==2.0.0
     #   cryptography
     #   pynacl
 charset-normalizer==3.4.4
-    # via requests
+    # via
+    #   docformatter
+    #   requests
 click==8.3.1
     # via
     #   celery
+    #   click-default-group
     #   click-didyoumean
     #   click-plugins
     #   click-repl
     #   pip-tools
     #   uvicorn
+    #   xsdata
+click-default-group==1.2.4
+    # via xsdata
 click-didyoumean==0.3.1
     # via celery
 click-plugins==1.1.1.2
@@ -131,13 +137,13 @@ django==5.2.9
     #   wagtail
 django-admin-sortable2==2.3
     # via -r requirements/base.in
-django-anymail==13.1
+django-anymail==14.0
     # via -r requirements/production.in
 django-appconf==1.2.0
     # via django-imagekit
-django-auditlog==3.4.0
+django-auditlog==3.4.1
     # via -r requirements/base.in
-django-axes==8.0.0
+django-axes==8.1.0
     # via -r requirements/base.in
 django-bulk-update==2.2.0
     # via -r requirements/base.in
@@ -171,7 +177,7 @@ django-guardian==3.2.0
     # via -r requirements/base.in
 django-haystack==3.3.0
     # via -r requirements/base.in
-django-health-check==3.20.0
+django-health-check==3.20.8
     # via -r requirements/base.in
 django-htmx==1.27.0
     # via -r requirements/base.in
@@ -191,7 +197,7 @@ django-pgviews==0.6.0
     # via -r requirements/base.in
 django-phonenumber-field==8.4.0
     # via django-two-factor-auth
-django-polymorphic==4.3.0
+django-polymorphic==4.5.0
     # via -r requirements/base.in
 django-ratelimit==4.1.0
     # via -r requirements/base.in
@@ -222,6 +228,8 @@ djangorestframework==3.16.1
     #   -r requirements/base.in
     #   drf-spectacular
     #   wagtail
+docformatter==1.7.7
+    # via xsdata
 draftjs-exporter==5.1.0
     # via wagtail
 drf-spectacular==0.29.0
@@ -244,11 +252,12 @@ hiredis==3.3.0
     # via -r requirements/base.in
 httptools==0.7.1
     # via uvicorn
-humanize==4.14.0
+humanize==4.15.0
     # via flower
 idna==3.11
     # via
     #   anyio
+    #   django-anymail
     #   requests
 inflection==0.5.1
     # via drf-spectacular
@@ -256,6 +265,8 @@ invoke==2.2.1
     # via paramiko
 jaydebeapi==1.2.3
     # via -r requirements/base.in
+jinja2==3.1.6
+    # via xsdata
 jmespath==1.0.1
     # via
     #   boto3
@@ -274,11 +285,15 @@ kombu==5.6.1
     # via celery
 laces==0.1.2
     # via wagtail
+lxml==6.0.2
+    # via -r requirements/base.in
+markupsafe==3.0.3
+    # via jinja2
 modelsearch==1.1.1
     # via wagtail
 newrelic==11.2.0
     # via -r requirements/production.in
-numpy==2.3.5
+numpy==2.4.0
     # via pandas
 openpyxl==3.1.5
     # via
@@ -377,26 +392,32 @@ rpds-py==0.30.0
     # via
     #   jsonschema
     #   referencing
+ruff==0.14.10
+    # via xsdata
 rules==3.5
     # via -r requirements/base.in
 s3transfer==0.16.0
     # via boto3
-sentry-sdk==2.47.0
+sentry-sdk==2.48.0
     # via -r requirements/base.in
 six==1.17.0
     # via
     #   django-pgviews
     #   python-dateutil
-soupsieve==2.8
+soupsieve==2.8.1
     # via beautifulsoup4
-sqlparse==0.5.4
+sqlparse==0.5.5
     # via django
 tablib==3.9.0
     # via django-import-export
 telepath==0.3.1
     # via wagtail
-tornado==6.5.3
+toposort==1.10
+    # via xsdata
+tornado==6.5.4
     # via flower
+tqdm==4.67.1
+    # via -r requirements/base.in
 typing-extensions==4.15.0
     # via
     #   anyio
@@ -409,6 +430,7 @@ typing-extensions==4.15.0
     #   exceptiongroup
     #   psycopg
     #   referencing
+    #   xsdata
 tzdata==2025.3
     # via
     #   django-celery-beat
@@ -416,6 +438,8 @@ tzdata==2025.3
     #   pandas
 tzlocal==5.3.1
     # via celery
+untokenize==0.1.1
+    # via docformatter
 uritemplate==4.2.0
     # via drf-spectacular
 urllib3==2.6.2
@@ -424,7 +448,7 @@ urllib3==2.6.2
     #   django-anymail
     #   requests
     #   sentry-sdk
-uvicorn[standard]==0.38.0
+uvicorn[standard]==0.40.0
     # via -r requirements/production.in
 uvloop==0.22.1
     # via uvicorn
@@ -454,6 +478,8 @@ willow[heif]==1.12.0
     #   wagtail
     #   willow
 xlsxwriter==3.2.9
+    # via -r requirements/base.in
+xsdata[cli]==25.7
     # via -r requirements/base.in
 
 # The following packages are considered to be unsafe in a requirements file:

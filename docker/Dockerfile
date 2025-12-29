@@ -19,7 +19,10 @@ WORKDIR /app/src
 
 # System dependencies
 RUN apt-get update && apt-get install -y \
+    pkg-config \
+    python3-dev \
     postgresql-client \
+    default-libmysqlclient-dev \
     libpq-dev \
     gcc g++ build-essential \
     curl git \

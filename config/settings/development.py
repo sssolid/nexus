@@ -81,7 +81,31 @@ DATABASES = {
             "connect_timeout": 10,
             "options": "-c search_path=public,staging",
         },
-    }
+    },
+    "mysql_autocare_vcdb": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "mysql_autocare_vcdb",
+        "USER": "root",
+        "PASSWORD": "root",
+        "HOST": "mysql-inspector",
+        "PORT": "3306",
+    },
+    "mysql_autocare_pcdb": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "mysql_autocare_pcdb",
+        "USER": "root",
+        "PASSWORD": "root",
+        "HOST": "mysql-inspector",
+        "PORT": "3306",
+    },
+    "mysql_autocare_pcadb": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "mysql_autocare_pcadb",
+        "USER": "root",
+        "PASSWORD": "root",
+        "HOST": "mysql-inspector",
+        "PORT": "3306",
+    },
 }
 
 # ============================================================
@@ -172,7 +196,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGGING["loggers"] = {
     "django.db.backends": {
         "handlers": ["console"],
-        "level": "DEBUG",
+        "level": "WARNING",
         "propagate": False,
     },
     "django.request": {

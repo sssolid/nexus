@@ -125,7 +125,13 @@ INSTALLED_APPS = [
     "apps.cms",
     "apps.accounts.apps.AccountsConfig",
     "apps.products",
-    "apps.autocare",
+    # "apps.autocare",
+    "apps.autocare.core.apps.AutocareCoreConfig",
+    "apps.autocare.models.reference.apps.AutocareReferenceConfig",
+    "apps.autocare.vcdb.apps.AutocareVCDBConfig",
+    "apps.autocare.pcdb.apps.AutocarePCDBConfig",
+    "apps.autocare.padb.apps.AutocarePADBConfig",
+    "apps.autocare.qdb.apps.AutocareQDBConfig",
     "apps.aces_pies",
     "apps.pricing",
     "apps.media_library",
@@ -228,7 +234,7 @@ DATABASES = {
         "OPTIONS": {
             "connect_timeout": 10,
         },
-    }
+    },
 }
 
 # ============================================================
@@ -443,8 +449,19 @@ AUTOCARE_USERNAME = env("AUTOCARE_USERNAME", default="")
 AUTOCARE_PASSWORD = env("AUTOCARE_PASSWORD", default="")
 AUTOCARE_SCOPE = env("AUTOCARE_SCOPE", default="")
 
+AUTOCARE_API_HOSTS = {
+    "vcdb": "https://vcdb.autocarevip.com",
+    "pcdb": "https://pcdb.autocarevip.com",
+    "padb": "https://pcdb.autocarevip.com",
+    "qdb":  "https://qdb.autocarevip.com",
+    "brand":  "https://brand.autocarevip.com",
+}
+VCDB_API_HOST = "https://vcdb.autocarevip.com"
+VCDB_API_V1_BASE = "https://vcdb.autocarevip.com/api/v1.0"
 VCDB_API_BASE = env("VCDB_API_BASE")
 VCDB_SWAGGER_URL = env("VCDB_SWAGGER_URL")
+PCDB_SWAGGER_URL = env("PCDB_SWAGGER_URL")
+QDB_SWAGGER_URL = env("QDB_SWAGGER_URL")
 
 # ============================================================
 # Logging (baseline)

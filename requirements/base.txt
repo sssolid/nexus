@@ -51,14 +51,20 @@ cffi==2.0.0
     #   cryptography
     #   pynacl
 charset-normalizer==3.4.4
-    # via requests
+    # via
+    #   docformatter
+    #   requests
 click==8.3.1
     # via
     #   celery
+    #   click-default-group
     #   click-didyoumean
     #   click-plugins
     #   click-repl
     #   pip-tools
+    #   xsdata
+click-default-group==1.2.4
+    # via xsdata
 click-didyoumean==0.3.1
     # via celery
 click-plugins==1.1.1.2
@@ -121,9 +127,9 @@ django-admin-sortable2==2.3
     # via -r requirements/base.in
 django-appconf==1.2.0
     # via django-imagekit
-django-auditlog==3.4.0
+django-auditlog==3.4.1
     # via -r requirements/base.in
-django-axes==8.0.0
+django-axes==8.1.0
     # via -r requirements/base.in
 django-bulk-update==2.2.0
     # via -r requirements/base.in
@@ -157,7 +163,7 @@ django-guardian==3.2.0
     # via -r requirements/base.in
 django-haystack==3.3.0
     # via -r requirements/base.in
-django-health-check==3.20.0
+django-health-check==3.20.8
     # via -r requirements/base.in
 django-htmx==1.27.0
     # via -r requirements/base.in
@@ -177,7 +183,7 @@ django-pgviews==0.6.0
     # via -r requirements/base.in
 django-phonenumber-field==8.4.0
     # via django-two-factor-auth
-django-polymorphic==4.3.0
+django-polymorphic==4.5.0
     # via -r requirements/base.in
 django-ratelimit==4.1.0
     # via -r requirements/base.in
@@ -204,6 +210,8 @@ djangorestframework==3.16.1
     #   -r requirements/base.in
     #   drf-spectacular
     #   wagtail
+docformatter==1.7.7
+    # via xsdata
 draftjs-exporter==5.1.0
     # via wagtail
 drf-spectacular==0.29.0
@@ -222,7 +230,7 @@ gunicorn==23.0.0
     # via -r requirements/base.in
 hiredis==3.3.0
     # via -r requirements/base.in
-humanize==4.14.0
+humanize==4.15.0
     # via flower
 idna==3.11
     # via requests
@@ -232,6 +240,8 @@ invoke==2.2.1
     # via paramiko
 jaydebeapi==1.2.3
     # via -r requirements/base.in
+jinja2==3.1.6
+    # via xsdata
 jpype1==1.6.0
     # via
     #   -r requirements/base.in
@@ -246,9 +256,13 @@ kombu==5.6.1
     # via celery
 laces==0.1.2
     # via wagtail
+lxml==6.0.2
+    # via -r requirements/base.in
+markupsafe==3.0.3
+    # via jinja2
 modelsearch==1.1.1
     # via wagtail
-numpy==2.3.5
+numpy==2.4.0
     # via pandas
 openpyxl==3.1.5
     # via
@@ -337,24 +351,30 @@ rpds-py==0.30.0
     # via
     #   jsonschema
     #   referencing
+ruff==0.14.10
+    # via xsdata
 rules==3.5
     # via -r requirements/base.in
-sentry-sdk==2.47.0
+sentry-sdk==2.48.0
     # via -r requirements/base.in
 six==1.17.0
     # via
     #   django-pgviews
     #   python-dateutil
-soupsieve==2.8
+soupsieve==2.8.1
     # via beautifulsoup4
-sqlparse==0.5.4
+sqlparse==0.5.5
     # via django
 tablib==3.9.0
     # via django-import-export
 telepath==0.3.1
     # via wagtail
-tornado==6.5.3
+toposort==1.10
+    # via xsdata
+tornado==6.5.4
     # via flower
+tqdm==4.67.1
+    # via -r requirements/base.in
 typing-extensions==4.15.0
     # via
     #   beautifulsoup4
@@ -366,6 +386,7 @@ typing-extensions==4.15.0
     #   exceptiongroup
     #   psycopg
     #   referencing
+    #   xsdata
 tzdata==2025.3
     # via
     #   django-celery-beat
@@ -373,6 +394,8 @@ tzdata==2025.3
     #   pandas
 tzlocal==5.3.1
     # via celery
+untokenize==0.1.1
+    # via docformatter
 uritemplate==4.2.0
     # via drf-spectacular
 urllib3==2.6.2
@@ -399,6 +422,8 @@ willow[heif]==1.12.0
     #   wagtail
     #   willow
 xlsxwriter==3.2.9
+    # via -r requirements/base.in
+xsdata[cli]==25.7
     # via -r requirements/base.in
 
 # The following packages are considered to be unsafe in a requirements file:

@@ -83,6 +83,36 @@ class ProductManufacturer(models.Model):
         return self.name
 
 
+class ProductInterchange(models.Model):
+    """
+    Model representing a product interchange number relationship.
+    """
+    product = models.ForeignKey(
+        'Product',
+        on_delete=models.CASCADE,
+        related_name='interchanges'
+    )
+    number = models.CharField(max_length=50, unique=True)
+    code = models.CharField(max_length=10, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _('product interchange')
+        verbose_name_plural = _('product interchanges')
+        ordering = ['product', 'number']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['product', 'number'],
+                name='uniq_product_interchange'
+            )
+        ]
+
+    def __str__(self):
+        """String representation of the product interchange."""
+        return f'{self.product} - {self.number}'
+
+
 class Product(models.Model):
     """
     Core product model with optimized structure for large catalogs.
@@ -165,6 +195,8 @@ class Product(models.Model):
         blank=True,
         null=True
     )
+
+    sold_as = models.CharField(max_length=100, blank=True)
 
     # Inventory
     quantity_in_stock = models.IntegerField(default=0)

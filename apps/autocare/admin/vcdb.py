@@ -4,8 +4,23 @@ from django.apps import apps
 VCDB_APP_LABEL = "autocare"
 VCDB_SCHEMA_PREFIX = '"autocare_vcdb".'
 
+# Models that MUST have explicit admins
+SKIP_MODEL_NAMES = {
+    "Vehicle",
+    "VehicleModel",
+    "BaseVehicle",
+    "Make",
+    "SubModel",
+    "Region",
+    "PublicationStage",
+}
+
 
 class VCdbModelAdmin(admin.ModelAdmin):
+    """
+    Fallback admin for simple VCDB reference tables.
+    """
+
     list_per_page = 50
     save_on_top = True
 
@@ -21,17 +36,28 @@ class VCdbModelAdmin(admin.ModelAdmin):
 
 def register_vcdb_models():
     """
-    Register all Autocare models whose db_table lives in the autocare_vcdb schema.
-    This is called lazily and ONLY when AUTOCARE_VCDB_READY=1.
+    Register ALL autocare_vcdb tables that do NOT already have
+    a dedicated ModelAdmin.
+
+    Explicit admins always take precedence.
     """
+
     for model in apps.get_models():
+
+        # Only autocare app
         if model._meta.app_label != VCDB_APP_LABEL:
             continue
 
+        # Only VCDB schema
         if not str(model._meta.db_table).startswith(VCDB_SCHEMA_PREFIX):
             continue
 
-        try:
-            admin.site.register(model, VCdbModelAdmin)
-        except admin.sites.AlreadyRegistered:
-            pass
+        # Skip models that must be explicitly registered
+        if model.__name__ in SKIP_MODEL_NAMES:
+            continue
+
+        # Skip if already registered
+        if model in admin.site._registry:
+            continue
+
+        admin.site.register(model, VCdbModelAdmin)

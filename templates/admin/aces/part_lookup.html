@@ -1,0 +1,484 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+
+    <!-- SEARCH BAR -->
+    <div class="app-surface p-4 mb-4">
+        <h2 class="mb-3">{{ title }}</h2>
+        <form method="get" action="" id="searchForm">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-8">
+                    <label class="form-label fw-bold">Part Number</label>
+                    <input type="text"
+                           name="part_number"
+                           value="{{ part_number }}"
+                           placeholder="Enter part number…"
+                           class="form-control form-control-lg"
+                           autofocus>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-search"></i> Search Applications
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if debug_errors %}
+    <div class="alert alert-warning">
+        <h5>Debug Information</h5>
+        <ul>
+            {% for error in debug_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if part_number %}
+
+    <!-- SUMMARY STATS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="app-surface p-3 text-center">
+                <div class="display-6 fw-bold text-primary">{{ summary.total_applications }}</div>
+                <div class="text-muted small">Total Applications</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="app-surface p-3 text-center">
+                <div class="fs-4 fw-bold text-info">{{ summary.year_range }}</div>
+                <div class="text-muted small">Year Range</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="app-surface p-3 text-center">
+                <div class="fs-4 fw-bold text-success">{{ summary.makes_count }}</div>
+                <div class="text-muted small">Makes</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="app-surface p-3 text-center">
+                <div class="fs-4 fw-bold text-warning">{{ summary.models_count }}</div>
+                <div class="text-muted small">Models</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+
+        <!-- FILTERS SIDEBAR -->
+        <div class="col-md-3">
+            <div class="app-surface p-3 sticky-top sticky-offset">
+                <h5 class="mb-3"><i class="fas fa-filter"></i> Filters</h5>
+
+                <form method="get" action="" id="filterForm">
+                    <input type="hidden" name="part_number" value="{{ part_number }}">
+
+                    <!-- YEAR FILTER -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Year</label>
+                        <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">All Years</option>
+                            {% for year in available_years %}
+                                <option value="{{ year }}" {% if current_filters.year == year|stringformat:"s" %}selected{% endif %}>
+                                    {{ year }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- MAKE FILTER -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Make</label>
+                        <select name="make" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">All Makes</option>
+                            {% for make_id, make_name in available_makes %}
+                                <option value="{{ make_id }}" {% if current_filters.make == make_id|stringformat:"s" %}selected{% endif %}>
+                                    {{ make_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- MODEL FILTER -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Model</label>
+                        <select name="model" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">All Models</option>
+                            {% for model_id, model_name in available_models %}
+                                <option value="{{ model_id }}" {% if current_filters.model == model_id|stringformat:"s" %}selected{% endif %}>
+                                    {{ model_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- SORT ORDER -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Sort By</label>
+                        <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="year" {% if current_filters.sort == "year" %}selected{% endif %}>Year</option>
+                            <option value="make" {% if current_filters.sort == "make" %}selected{% endif %}>Make</option>
+                            <option value="model" {% if current_filters.sort == "model" %}selected{% endif %}>Model</option>
+                            <option value="app_id" {% if current_filters.sort == "app_id" %}selected{% endif %}>App ID</option>
+                        </select>
+                    </div>
+
+                    {% if current_filters.year or current_filters.make or current_filters.model %}
+                    <a href="?part_number={{ part_number }}" class="btn btn-outline-secondary btn-sm w-100">
+                        <i class="fas fa-times"></i> Clear Filters
+                    </a>
+                    {% endif %}
+                </form>
+
+                <!-- QUICK STATS -->
+                <hr class="my-3">
+                <div class="small text-muted">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>With Qualifiers:</span>
+                        <span class="fw-bold">{{ summary.has_qualifiers }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>With Notes:</span>
+                        <span class="fw-bold">{{ summary.has_notes }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APPLICATIONS TABLE -->
+        <div class="col-md-9">
+            <div class="app-surface p-0">
+
+                <!-- TABLE HEADER -->
+                <div class="p-3 border-bottom app-surface-soft">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            Applications
+                            <span class="badge bg-primary">{{ page_obj.paginator.count }}</span>
+                        </h5>
+                        <div class="text-muted small">
+                            Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APPLICATIONS TABLE -->
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">App ID</th>
+                                <th style="width: 100px;">Years</th>
+                                <th>Vehicle</th>
+                                <th>Engine</th>
+                                <th>Trans</th>
+                                <th style="width: 60px;" class="text-center">Notes</th>
+                                <th style="width: 60px;" class="text-center">Quals</th>
+                                <th style="width: 100px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app_data in applications %}
+                            <tr>
+                                <td class="text-primary fw-bold">
+                                    #{{ app_data.app.app_id }}
+                                </td>
+                                <td class="text-nowrap">
+                                    {{ app_data.vehicle.years|default:"-" }}
+                                </td>
+                                <td>
+                                    <div class="fw-bold">
+                                        {% if app_data.vehicle.base_vehicle %}
+                                            {{ app_data.vehicle.base_vehicle }}
+                                        {% else %}
+                                            {{ app_data.vehicle.make_obj|default:"" }} {{ app_data.vehicle.model_obj|default:"" }}
+                                        {% endif %}
+                                    </div>
+                                    {% if app_data.vehicle.submodel %}
+                                        <div class="small text-muted">{{ app_data.vehicle.submodel }}</div>
+                                    {% endif %}
+                                </td>
+                                <td class="small">
+                                    {% if app_data.vehicle.engine %}
+                                        <div class="fw-bold">{{ app_data.vehicle.engine.display }}</div>
+                                        {% if app_data.vehicle.engine_vin %}
+                                            <div class="text-muted">VIN: {{ app_data.vehicle.engine_vin }}</div>
+                                        {% endif %}
+                                        {% if app_data.vehicle.aspiration %}
+                                            <div class="text-muted">{{ app_data.vehicle.aspiration }}</div>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="small">
+                                    {% if app_data.vehicle.transmission %}
+                                        {{ app_data.vehicle.transmission.display }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if app_data.notes %}
+                                        <span class="badge bg-info">{{ app_data.notes|length }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if app_data.qualifiers %}
+                                        <span class="badge bg-warning">{{ app_data.qualifiers|length }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <button class="btn btn-outline-primary btn-sm"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#details-{{ app_data.app.app_id }}"
+                                            aria-expanded="false">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- EXPANDABLE DETAILS ROW -->
+                            <tr class="collapse app-surface-soft" id="details-{{ app_data.app.app_id }}">
+                                <td colspan="8" class="app-surface-soft">
+                                    <div class="p-3">
+                                        <div class="row g-3">
+
+                                            <!-- COMPLETE VEHICLE INFO -->
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary mb-2"><i class="fas fa-car"></i> Complete Vehicle Details</h6>
+                                                <table class="table table-sm table-borderless mb-0 small">
+                                                    <tr>
+                                                        <td class="text-muted" style="width: 120px;">Years:</td>
+                                                        <td class="fw-bold">{{ app_data.vehicle.years|default:"-" }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-muted">Make:</td>
+                                                        <td class="fw-bold">{{ app_data.vehicle.make_obj|default:"-" }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-muted">Model:</td>
+                                                        <td class="fw-bold">{{ app_data.vehicle.model_obj|default:"-" }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-muted">SubModel:</td>
+                                                        <td>{{ app_data.vehicle.submodel|default:"-" }}</td>
+                                                    </tr>
+                                                    {% if app_data.vehicle.drive_type %}
+                                                    <tr>
+                                                        <td class="text-muted">Drive Type:</td>
+                                                        <td>{{ app_data.vehicle.drive_type }}</td>
+                                                    </tr>
+                                                    {% endif %}
+                                                    {% if app_data.vehicle.body_type %}
+                                                    <tr>
+                                                        <td class="text-muted">Body Type:</td>
+                                                        <td>{{ app_data.vehicle.body_type }}</td>
+                                                    </tr>
+                                                    {% endif %}
+                                                    {% if app_data.vehicle.bed_type %}
+                                                    <tr>
+                                                        <td class="text-muted">Bed Type:</td>
+                                                        <td>{{ app_data.vehicle.bed_type }}</td>
+                                                    </tr>
+                                                    {% endif %}
+                                                </table>
+                                            </div>
+
+                                            <!-- ENGINE & POWERTRAIN -->
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary mb-2"><i class="fas fa-cog"></i> Engine & Powertrain</h6>
+                                                <table class="table table-sm table-borderless mb-0 small">
+                                                    {% if app_data.vehicle.engine %}
+                                                    <tr>
+                                                        <td class="text-muted" style="width: 120px;">Engine:</td>
+                                                        <td class="fw-bold">{{ app_data.vehicle.engine.display }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-muted">Displacement:</td>
+                                                        <td>{{ app_data.vehicle.engine.liter }}L ({{ app_data.vehicle.engine.cid }}ci)</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-muted">Configuration:</td>
+                                                        <td>{{ app_data.vehicle.engine.block_type }}{{ app_data.vehicle.engine.cylinders }}</td>
+                                                    </tr>
+                                                    {% endif %}
+                                                    {% if app_data.vehicle.engine_vin %}
+                                                    <tr>
+                                                        <td class="text-muted">VIN Code:</td>
+                                                        <td>{{ app_data.vehicle.engine_vin }}</td>
+                                                    </tr>
+                                                    {% endif %}
+                                                    {% if app_data.vehicle.aspiration %}
+                                                    <tr>
+                                                        <td class="text-muted">Aspiration:</td>
+                                                        <td>{{ app_data.vehicle.aspiration }}</td>
+                                                    </tr>
+                                                    {% endif %}
+                                                    {% if app_data.vehicle.fuel_type %}
+                                                    <tr>
+                                                        <td class="text-muted">Fuel Type:</td>
+                                                        <td>{{ app_data.vehicle.fuel_type }}</td>
+                                                    </tr>
+                                                    {% endif %}
+                                                    {% if app_data.vehicle.transmission %}
+                                                    <tr>
+                                                        <td class="text-muted">Transmission:</td>
+                                                        <td class="fw-bold">{{ app_data.vehicle.transmission.display }}</td>
+                                                    </tr>
+                                                    {% endif %}
+                                                </table>
+                                            </div>
+
+                                            <!-- PART INFO -->
+                                            <div class="col-md-12">
+                                                <h6 class="text-primary mb-2"><i class="fas fa-box"></i> Part Information</h6>
+                                                <table class="table table-sm table-borderless mb-0 small">
+                                                    <tr>
+                                                        <td class="text-muted" style="width: 150px;">Part Number:</td>
+                                                        <td class="fw-bold">{{ app_data.app.part_number }}</td>
+                                                        <td class="text-muted" style="width: 150px;">Quantity:</td>
+                                                        <td>{{ app_data.app.quantity|default:"1" }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-muted">Part Type:</td>
+                                                        <td>ID {{ app_data.app.part_type_id }}</td>
+                                                        <td class="text-muted">Mfr Label:</td>
+                                                        <td>{{ app_data.app.mfr_label|default:"-" }}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+
+                                            <!-- QUALIFIERS -->
+                                            {% if app_data.qualifiers %}
+                                            <div class="col-md-12">
+                                                <h6 class="text-warning mb-2"><i class="fas fa-exclamation-triangle"></i> Qualifiers</h6>
+                                                <div class="app-surface-soft p-2">
+                                                    <ul class="mb-0 small">
+                                                        {% for qual in app_data.qualifiers %}
+                                                        <li>
+                                                            {{ qual.qual_text }}
+                                                            {% if qual.param_1 %}
+                                                                <span class="text-muted">({{ qual.param_1 }})</span>
+                                                            {% endif %}
+                                                        </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- NOTES -->
+                                            {% if app_data.notes %}
+                                            <div class="col-md-12">
+                                                <h6 class="text-info mb-2"><i class="fas fa-sticky-note"></i> Application Notes</h6>
+                                                <div class="app-surface-soft p-2">
+                                                    <ul class="mb-0 small">
+                                                        {% for note in app_data.notes %}
+                                                        <li>{{ note.attr_value }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- ACTIONS -->
+                                            <div class="col-md-12 text-end">
+                                                <a href="{% url 'admin:autocare_acesapp_change' app_data.app.id %}"
+                                                   class="btn btn-primary btn-sm"
+                                                   target="_blank">
+                                                    <i class="fas fa-external-link-alt"></i> View Full Record
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINATION -->
+                {% if page_obj.has_other_pages %}
+                <div class="p-3 border-top">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?part_number={{ part_number }}&year={{ current_filters.year }}&make={{ current_filters.make }}&model={{ current_filters.model }}&sort={{ current_filters.sort }}&page=1">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?part_number={{ part_number }}&year={{ current_filters.year }}&make={{ current_filters.make }}&model={{ current_filters.model }}&sort={{ current_filters.sort }}&page={{ page_obj.previous_page_number }}">Previous</a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                </span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?part_number={{ part_number }}&year={{ current_filters.year }}&make={{ current_filters.make }}&model={{ current_filters.model }}&sort={{ current_filters.sort }}&page={{ page_obj.next_page_number }}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?part_number={{ part_number }}&year={{ current_filters.year }}&make={{ current_filters.make }}&model={{ current_filters.model }}&sort={{ current_filters.sort }}&page={{ page_obj.paginator.num_pages }}">Last</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- EMPTY STATE -->
+    <div class="app-surface p-5 text-center text-muted">
+        <i class="fas fa-search fa-3x mb-3 opacity-50"></i>
+        <p class="fs-5">Enter a part number above to view its applications.</p>
+    </div>
+    {% endif %}
+
+</div>
+
+<style>
+/* Theme-safe sticky offset only (no colors here) */
+.sticky-offset { top: 20px; }
+
+/* Avoid hardcoded light hover backgrounds; let your token surfaces & Bootstrap handle it */
+</style>
+
+<script>
+// Toggle chevron icon on collapse
+document.addEventListener('DOMContentLoaded', function() {
+    const collapseButtons = document.querySelectorAll('[data-bs-toggle="collapse"]');
+    collapseButtons.forEach(button => {
+        const target = document.querySelector(button.dataset.bsTarget);
+        target.addEventListener('shown.bs.collapse', function() {
+            button.querySelector('i').classList.replace('fa-chevron-down', 'fa-chevron-up');
+        });
+        target.addEventListener('hidden.bs.collapse', function() {
+            button.querySelector('i').classList.replace('fa-chevron-up', 'fa-chevron-down');
+        });
+    });
+});
+</script>
+
+{% endblock %}

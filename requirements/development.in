@@ -4,6 +4,9 @@
 django-debug-toolbar
 django-silk
 
+# Database
+mysqlclient
+
 # Testing
 pytest
 pytest-django

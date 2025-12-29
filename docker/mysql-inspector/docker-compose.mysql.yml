@@ -1,0 +1,18 @@
+services:
+  mysql-inspector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mysql-inspector
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ../../data/mysql_dumps:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "3307:3306"
+    networks:
+      - nexus_network
+
+networks:
+  nexus_network:
+    external: true

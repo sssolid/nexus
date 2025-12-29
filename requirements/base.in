@@ -1,5 +1,7 @@
 pip-tools
 
+tqdm
+
 # Core Django
 Django
 django-environ
@@ -115,3 +117,7 @@ django-crontab
 
 # Environment
 python-decouple
+
+# XSD XML
+xsdata[cli]
+lxml

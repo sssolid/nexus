@@ -1,115 +1,238 @@
-REFERENCE TABLES
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Year --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Make --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Model --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SubModel --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Region --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleTypeGroup --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Class --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Abbreviation --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/PublicationStage --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Mfr --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/MfrBodyCode --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BodyType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BodyNumDoors --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BedType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BedLength --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/WheelBase --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Transmission --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionMfrCode --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/ElecControlled --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/PowerOutput --asof 2025-12-18 --pagesize 1000
+# ✅ VCDB INGESTION & MODEL PIPELINE (UPDATED CANONICAL PLAYBOOK)
 
-ATTRIBUTE TABLES
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/DriveType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionControlType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionNumSpeeds --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SteeringType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SteeringSystem --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BrakeType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BrakeSystem --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BrakeABS --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SpringType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Valves --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Aspiration --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/CylinderHeadType --asof 2025-12-18 --pagesize 1000
+This is the **single source of truth** going forward.
 
-CONFIGURATION TABLES
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineBlock --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineBoreStroke --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineBase --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineDesignation --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineVersion --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineVin --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/EngineConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/TransmissionBase --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BrakeConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SteeringConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/SpringTypeConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BodyStyleConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BedConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelDeliveryConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelDeliveryType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelDeliverySubType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelSystemControlType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/FuelSystemDesign --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/IgnitionSystemType --asof 2025-12-18 --pagesize 1000
+---
 
-CORE VEHICLES (HIGH VOLUME)
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/BaseVehicle --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/Vehicle --asof 2025-12-18 --pagesize 1000
+## 0️⃣ Hard reset (DEV ONLY – nuclear option)
 
-FITMENT TABLES (VERY LARGE)
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToEngineConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToTransmission --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToBodyConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToDriveType --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToBedConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToWheelBase --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToClass --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToBrakeConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToBodyStyleConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToSpringTypeConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToSteeringConfig --asof 2025-12-18 --pagesize 1000
-- docker compose exec web python manage.py ingest_autocare --db vcdb /vcdb/VehicleToMfrBodyCode --asof 2025-12-18 --pagesize 1000
+### Drop VCDB canonical + raw data
 
-Skip /vcdb/equipment and /vcdb/VCdbChanges
+```bash
+docker compose exec web psql -h db -U postgres -d nexus -v ON_ERROR_STOP=1 <<'SQL'
+DROP SCHEMA IF EXISTS autocare_vcdb CASCADE;
+DROP TABLE IF EXISTS autocare_autocarerawrecord CASCADE;
+SQL
+```
 
-# Create a raw dump of the raw data
-docker compose exec db pg_dump -U postgres -Fc -t autocare_autocarerawrecord nexus > data/autocare/raw/vcdb_raw_$(date +%F).dump
-# IF YOU NEED TO IMPORT THIS DUMP
-cat data/autocare/raw/vcdb_raw_2025-12-15.dump | \
+Recreate schemas/tables via migrations afterward.
+
+---
+
+## 1️⃣ Run full VCDB baseline ingest (RAW DATA ONLY)
+
+> **This replaces all manual ingest_autocare calls.**
+> This is now the *only* supported way to build raw VCDB data.
+
+### Fresh baseline (no resume)
+
+```bash
+docker compose exec web python manage.py vcdb_baseline_ingest
+```
+
+### Resume after failure
+
+```bash
+docker compose exec web python manage.py vcdb_baseline_ingest --resume
+```
+
+**Behavior**
+
+* Uses `AsOfDate = 2025-12-18`
+* Skips `/vcdb/equipment/*`
+* Skips `/vcdb/VCdbChanges`
+* Retries per endpoint
+* Resumes per page when requested
+* Hard-fails if retries are exhausted
+
+---
+
+## 2️⃣ Backup raw VCDB payloads (recommended)
+
+```bash
+docker compose exec db pg_dump \
+  -U postgres \
+  -Fc \
+  -t autocare_autocarerawrecord \
+  nexus \
+  > data/autocare/raw/vcdb_raw_$(date +%F).dump
+```
+
+### Restore raw payloads if needed
+
+```bash
+cat data/autocare/raw/vcdb_raw_2025-12-22.dump | \
 docker compose exec -T db pg_restore \
   -U postgres \
   -d nexus \
   --clean \
   --if-exists
+```
+
+---
+
+## 3️⃣ Create staging schema (for model generation only)
+
+```bash
+docker compose exec web bash -c '
+set -e
+export PGPASSWORD=postgres
+
+psql -h db -U postgres -d nexus -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS staging_vcdb CASCADE; CREATE SCHEMA staging_vcdb;"
+psql -h db -U postgres -d nexus -v ON_ERROR_STOP=1 -c "SET search_path TO staging_vcdb;" -f /app/src/data/autocare/db_schema/vcdb_schema.sql
+python manage.py generate_autocare_models --schema staging_vcdb --output-dir apps/autocare/models/_staging_dump/vcdb
+
+psql -h db -U postgres -d nexus -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS staging_pcdb CASCADE; CREATE SCHEMA staging_pcdb;"
+psql -h db -U postgres -d nexus -v ON_ERROR_STOP=1 -c "SET search_path TO staging_pcdb;" -f /app/src/data/autocare/db_schema/pcdb_schema.sql
+python manage.py generate_autocare_models --schema staging_pcdb --output-dir apps/autocare/models/_staging_dump/pcdb
+
+psql -h db -U postgres -d nexus -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS staging_padb CASCADE; CREATE SCHEMA staging_padb;"
+psql -h db -U postgres -d nexus -v ON_ERROR_STOP=1 -c "SET search_path TO staging_padb;" -f /app/src/data/autocare/db_schema/padb_schema.sql
+python manage.py generate_autocare_models --schema staging_padb --output-dir apps/autocare/models/_staging_dump/padb
+
+psql -h db -U postgres -d nexus -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS staging_qdb CASCADE; CREATE SCHEMA staging_qdb;"
+psql -h db -U postgres -d nexus -v ON_ERROR_STOP=1 -c "SET search_path TO staging_qdb;"  -f /app/src/data/autocare/db_schema/qdb_schema.sql
+python manage.py generate_autocare_models --schema staging_qdb  --output-dir apps/autocare/models/_staging_dump/qdb
+'
+```
 
 
-# Create the staging database to generate django models from
-# MAKE SURE THE SCHEMA FROM AUTOCARE HAS QUOTES AROUND THE TABLE NAMES AND FIELDS (IT DOESN'T ON ALL OF THEM)
-docker compose exec web psql -h db -U postgres -d nexus -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS staging CASCADE; CREATE SCHEMA staging;"
-docker compose exec web psql -h db -U postgres -d nexus -v ON_ERROR_STOP=1 -c "SET search_path TO staging;" -f /app/src/data/autocare/db_schema/vcdb_schema.sql
+⚠️ **Reminder**
+The SQL schema **must**:
 
-# Generate the django models
-# Before doing so check the models as there are some manual changes that need to be done
-# For example:
-# v_cdb_changes.py should be vcdb_changes.py
-#   the id field should be vcdb_change_id = models.IntegerField(db_column='ID')
-# vehicle_to_class.py:
-# class_ should be...
-# vehicle_class = models.ForeignKey('VehicleClass', db_column='ClassID', db_index=True, on_delete=models.DO_NOTHING)
-# THE FUCKING CODE IS NOT DOING CamelCase PROPERLY AND NEEDS TO BE FIXED IMMEDIATELY
+* quote table names
+* quote column names
+* preserve exact VCDB casing
+
+---
+
+## 4️⃣ Generate Django models (AUTOGENERATED, NOT FINAL)
+
+```bash
 docker compose exec web python manage.py generate_autocare_models
+```
 
-# Verify the models
+### Mandatory manual fixes (until generator is fixed)
+
+You already identified these correctly — this list is now **official**:
+
+* **File naming**
+
+  * `v_cdb_changes.py` → `vcdb_changes.py`
+* **Reserved fields**
+
+  * Rename `id` → `<model>_id`
+* **ForeignKey collisions**
+
+  * `class_` → `vehicle_class`
+* **CamelCase normalization**
+
+  * Generator must map:
+
+    * `SubModelID` → `submodel_id`
+    * `VehicleTypeID` → `vehicle_type_id`
+* **Self-FKs**
+
+  * Explicit `related_name`
+
+⚠️ Do **not** proceed until these are clean.
+
+---
+
+## 5️⃣ Validate models (hard gate)
+
+```bash
 docker compose exec web python manage.py validate_autocare_models
+```
 
-# Generate the migrations
+If this fails: **stop**.
+Fix models. Re-run validation.
+
+---
+
+## 6️⃣ Create canonical schema via migrations
+
+```bash
 docker compose exec web python manage.py makemigrations autocare
-
-# Migrate the data
 docker compose exec web python manage.py migrate autocare
+```
+
+At this point:
+
+* `autocare_vcdb.*` tables exist
+* FK constraints are enforced
+* Schema is stable
+
+---
+
+## 7️⃣ Ingest raw → canonical VCDB tables
+
+### Automatic dependency-aware ingest
+
+```bash
+docker compose exec web python manage.py ingest_vcdb_payloads --skip-missing-vehicles --skip-missing-engineconfig2
+# docker compose exec web python manage.py ingest_vcdb_payloads --db vcdb --order auto_fk
+```
+
+### Resume canonical ingest after failure
+
+```bash
+docker compose exec web python manage.py ingest_vcdb_payloads --skip-missing-vehicles --skip-missing-engineconfig2 --resume
+# docker compose exec web python manage.py ingest_vcdb_payloads --db vcdb --order auto_fk --resume
+```
+
+**Features**
+
+* Topological FK ordering
+* Batch inserts
+* Detailed FK violation logging
+* Resume support
+* Hard exit on irrecoverable integrity errors
+
+---
+
+## 8️⃣ Post-ingest verification (recommended)
+
+```sql
+-- Orphans check example
+SELECT COUNT(*)
+FROM autocare_vcdb.vehicle_to_engine_config vtec
+LEFT JOIN autocare_vcdb.vehicle v ON v.vehicle_id = vtec.vehicle_id
+WHERE v.vehicle_id IS NULL;
+```
+
+Should return **0**.
+
+---
+
+## TODO
+
+### Generator hardening
+
+Fix CamelCase normalization and reserved-name handling once, centrally.
+
+### Baseline lock
+
+Prevent concurrent baseline runs (simple DB lock row).
+
+### FK readiness checks
+
+Preflight before canonical ingest to fail faster.
+
+### Celery wiring
+
+Wrap baseline and canonical ingest as chained tasks.
+
+### Other improvements
+
+#### Incremental updates (SinceDate nightly jobs)
+
+#### ACES / PIES ingestion and normalization
+
+#### Search/indexing strategy (Postgres, OpenSearch, etc.)
+
+#### Admin/UI for VCDB exploration
+
+#### Data validation & diffing against previous baselines
+
+#### Media sees VCDB join work (fitment → products)
