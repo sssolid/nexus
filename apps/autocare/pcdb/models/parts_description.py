@@ -1,10 +1,10 @@
 from django.db import models
-from apps.autocare.models.mixins import AutocareAPIMetadata
+from apps.autocare.core.mixins import AutocareAPIMetadata
 
 
 class PartsDescription(AutocareAPIMetadata, models.Model):
     parts_description_id = models.IntegerField(db_column='PartsDescriptionID', primary_key=True)
-    parts_description = models.CharField(db_column='PartsDescription', max_length=1000)
+    parts_description = models.CharField(db_column='PartsDescription', max_length=1000, null=True, blank=True)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.pk})"

@@ -49,6 +49,9 @@ if [ "${MIGRATE:-true}" = "false" ]; then
   exec "$@"
 fi
 
+echo "Creating database migrations..."
+python manage.py makemigrations
+
 echo "Applying database migrations..."
 python manage.py migrate --noinput
 touch /app/.migrations_done

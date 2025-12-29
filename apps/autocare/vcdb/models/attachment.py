@@ -1,11 +1,11 @@
 from django.db import models
-from apps.autocare.models.mixins import AutocareAPIMetadata
+from apps.autocare.core.mixins import AutocareAPIMetadata
 
 
 class Attachment(AutocareAPIMetadata, models.Model):
     attachment_id = models.IntegerField(db_column='AttachmentID', primary_key=True)
     attachment_type = models.ForeignKey(
-        "autocare_vcdb.PIESCode",
+        "autocare_pies.PIESCode",
         to_field="pies_code_id",
         db_column="AttachmentTypeID",
         on_delete=models.DO_NOTHING,

@@ -10,7 +10,7 @@ from tqdm import tqdm
 from xsdata.formats.dataclass.parsers import XmlParser
 
 from apps.autocare.aces.schemas import Aces
-from apps.autocare.models.aces.app import (
+from apps.autocare.aces.models import (
     AcesApp,
     AcesAppVehicle,
     AcesQualifier,

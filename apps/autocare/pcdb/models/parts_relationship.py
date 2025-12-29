@@ -1,10 +1,13 @@
 from django.db import models
-from apps.autocare.models.mixins import AutocareAPIMetadata
+from apps.autocare.core.mixins import AutocareAPIMetadata
 
 
 class PartsRelationship(AutocareAPIMetadata, models.Model):
-    part_terminology = models.ForeignKey('autocare_pcdb.Parts', db_column='PartTerminologyID', db_index=True, on_delete=models.DO_NOTHING)
-    related_part_terminology = models.ForeignKey('autocare_pcdb.Parts', db_column='RelatedPartTerminologyID', db_index=True, on_delete=models.DO_NOTHING)
+    part_terminology = models.ForeignKey('autocare_pcdb.Parts', db_column='PartTerminologyID', db_index=True,
+                                         on_delete=models.DO_NOTHING)
+    related_part_terminology = models.ForeignKey('autocare_pcdb.Parts', db_column='RelatedPartTerminologyID',
+                                                 related_name="related_part_relationships", db_index=True,
+                                                 on_delete=models.DO_NOTHING)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.pk})"
@@ -18,4 +21,3 @@ class PartsRelationship(AutocareAPIMetadata, models.Model):
         indexes = [
             models.Index(fields=['part_terminology', 'related_part_terminology']),
         ]
-

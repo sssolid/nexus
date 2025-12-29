@@ -1,5 +1,5 @@
 from django.db import models
-from apps.autocare.models.mixins import AutocareAPIMetadata
+from apps.autocare.core.mixins import AutocareAPIMetadata
 
 
 class Vehicle(AutocareAPIMetadata, models.Model):
@@ -11,9 +11,6 @@ class Vehicle(AutocareAPIMetadata, models.Model):
     publication_stage = models.ForeignKey('autocare_vcdb.PublicationStage', db_column='PublicationStageID', db_index=True, blank=True, null=True, on_delete=models.DO_NOTHING)
     publication_stage_source = models.CharField(db_column='PublicationStageSource', max_length=100, blank=True, null=True)
     publication_stage_date = models.DateTimeField(db_column='PublicationStageDate', blank=True, null=True)
-
-    is_stub = models.BooleanField(default=False)
-    stub_reason = models.CharField(max_length=255, blank=True, default="")
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.pk})"

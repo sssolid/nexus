@@ -87,6 +87,11 @@ urlpatterns = [
     path("contact/", static_views.contact_us, name="contact"),
 
     # --------------------------------------------------------
+    # Autocare pages
+    # --------------------------------------------------------
+    path("vcdb/", include("apps.autocare.vcdb.urls", namespace="vcdb")),
+
+    # --------------------------------------------------------
     # Wagtail pages (MUST BE LAST)
     # --------------------------------------------------------
     path("", include(wagtail_urls)),

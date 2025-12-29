@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from apps.autocare.api import AutocareAPIClient
+from apps.autocare.api_client import AutocareAPIClient
 
 
 class VehicleResolver:

@@ -1,5 +1,5 @@
 from django.db import models
-from apps.autocare.models.mixins import AutocareAPIMetadata
+from apps.autocare.core.mixins import AutocareAPIMetadata
 
 
 class Model(AutocareAPIMetadata, models.Model):
