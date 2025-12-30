@@ -117,6 +117,7 @@ help:
 	@echo "  git        Git workflows"
 	@echo "  pip        Pip workflows"
 	@echo "  bundles    Multi-step workflows"
+	@echo "  shemas     Generate aces/pies schemas"
 	@echo ""
 	@echo "Usage:"
 	@echo "  make help-<category>"
@@ -573,3 +574,10 @@ doctor:
 
 help-doctor:
 	@echo "doctor — Environment diagnostics"
+
+# ============================================================
+# SCHEMAS
+# ============================================================
+
+schemas:
+	python -m infrastructure.schemas.tooling.generate

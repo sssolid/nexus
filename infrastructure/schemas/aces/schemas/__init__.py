@@ -1,4 +1,4 @@
-from apps.autocare.aces.schemas.aces_4_2_xsdschema_rev2_11_19_2021 import (
+from infrastructure.schemas.aces.schemas.aces_4_2_xsdschema_rev2_11_19_2021 import (
     Aces,
     App,
     AppItemsBaseType,
