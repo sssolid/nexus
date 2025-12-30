@@ -6,4 +6,5 @@ media pipelines.
 
 ## Core Documentation
 
+- [Environment Setup](docs/env.example.md)
 - [Autocare Full Rebuild Runbook](docs/runbooks/autocare-rebuild.md)
